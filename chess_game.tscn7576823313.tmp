@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://5l87dv8p55mp"]
+
+[ext_resource type="Script" uid="uid://b7y4ckk7ek2ln" path="res://chess_game.gd" id="1_wgevo"]
+
+[node name="ChessGame" type="Node2D"]
+script = ExtResource("1_wgevo")

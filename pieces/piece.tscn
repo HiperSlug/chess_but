@@ -1,0 +1,21 @@
+[gd_scene load_steps=3 format=3 uid="uid://8g0a2d8maygw"]
+
+[ext_resource type="Texture2D" uid="uid://bmd5d2fwd3t5s" path="res://piece_assets/wK.svg" id="1_5m6vo"]
+[ext_resource type="Script" uid="uid://crltphd6xxh1i" path="res://pieces/piece.gd" id="1_bdpih"]
+
+[node name="Piece" type="TextureRect"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -50.0
+offset_top = -50.0
+offset_right = 50.0
+offset_bottom = 50.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(0.64, 0.64)
+mouse_filter = 2
+texture = ExtResource("1_5m6vo")
+script = ExtResource("1_bdpih")
