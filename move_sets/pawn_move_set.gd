@@ -2,7 +2,6 @@ extends MoveSet
 class_name PawnMoveSet
 
 
-
 func _get_all_available_moves(board: Board, piece_position: Vector2i) -> Array[Move]:
 	
 	var available_moves: Array[Move]
@@ -70,9 +69,9 @@ func _get_all_available_moves(board: Board, piece_position: Vector2i) -> Array[M
 					if is_pawn and is_enemy:
 						
 						var last_move: Move = board.get_last_move()
-						if last_move.new_position == adjacent_position:
+						if last_move.final_position == adjacent_position:
 							
-							var change_in_position: int = last_move.new_position.y - last_move.inital_position.y
+							var change_in_position: int = last_move.final_position.y - last_move.inital_position.y
 							var pawn_did_double_time_last_move: bool = (abs(change_in_position) == 2)
 							if pawn_did_double_time_last_move:
 								
@@ -80,17 +79,17 @@ func _get_all_available_moves(board: Board, piece_position: Vector2i) -> Array[M
 								available_moves.append(en_passant)
 	
 	
-	# check moves for promotion
-	#var ending_y_position_for_promotion: int
-	#if team_is_white:
-		#ending_y_position_for_promotion = 0
-	#else:
-		#ending_y_position_for_promotion = 7
-	#
-	#for move: Move in available_moves:
-		#
-		#if move.new_position.y == ending_y_position_for_promotion:
-			#move.do_promotion = true
-	
+	for move in available_moves:
+		if check_for_promotion(move.final_position,team_is_white):
+			move.do_promotion = true
+			move.promotion_move_set = self
 	
 	return available_moves
+
+func check_for_promotion(position: Vector2i, promotion_at_top: bool) -> bool:
+	if position.y == 0 and promotion_at_top:
+		return true
+	elif position.y == (8 - 1) and not promotion_at_top:
+		return true
+	else:
+		return false

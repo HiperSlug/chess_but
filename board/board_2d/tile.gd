@@ -1,15 +1,18 @@
-@tool
-extends ColorRect
+extends Node2D
 class_name Tile
 
-signal on_tile_clicked(tile_position: Vector2i)
+const tile_size: int = 64
+
 
 var tile_position: Vector2i
 
-func _gui_input(event: InputEvent) -> void:
+signal on_tile_clicked(tile_position: Vector2i)
+func _on_control_gui_input(event: InputEvent) -> void:
 	if event.is_action_pressed("select"):
-		accept_event() # may need to remove if it conflicts with pieces.
 		on_tile_clicked.emit(tile_position)
+
+func set_color(color: Color) -> void:
+	$Sprite2D.modulate = color
 
 enum TILE_EFFECT {
 	NONE,
