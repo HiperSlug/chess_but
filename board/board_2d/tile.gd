@@ -6,10 +6,13 @@ const tile_size: int = 64
 
 var tile_position: Vector2i
 
-signal on_tile_clicked(tile_position: Vector2i)
-func _on_control_gui_input(event: InputEvent) -> void:
+signal on_tile_pressed(tile_position: Vector2i)
+signal on_tile_released(tile_position: Vector2i)
+func _on_area_2d_input_event(_viewport: Node, event: InputEvent, _shape_idx: int) -> void:
 	if event.is_action_pressed("select"):
-		on_tile_clicked.emit(tile_position)
+		on_tile_pressed.emit(tile_position)
+	elif event.is_action_released("select"):
+		on_tile_released.emit(tile_position)
 
 func set_color(color: Color) -> void:
 	$Sprite2D.modulate = color

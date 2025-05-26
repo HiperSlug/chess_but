@@ -2,40 +2,49 @@ extends MoveSet
 class_name PawnMoveSet
 
 
-func _get_all_available_moves(board: Board, piece_position: Vector2i) -> Array[Move]:
-	
+var type: Globals.TYPE = Globals.TYPE.PAWN
+
+
+func _get_all_available_moves(current_board_matrix: Array[Array], piece_position: Vector2i, piece_team_is_white: bool, total_move_count: int = 0, do_king_check = true) -> Array[Move]: # virtual
 	var available_moves: Array[Move]
 	
 	var forward_direction: int
-	if team_is_white:
+	if piece_team_is_white:
 		forward_direction = -1
 	else:
 		forward_direction = 1
 	
-	var piece: Piece = board.current_board_matrix[piece_position.x][piece_position.y]
 	
 	
 	# move forward one & move forward two on first move
 	var forward_one_position: Vector2i = Vector2i(piece_position.x, piece_position.y + forward_direction)
 	if is_in_bounds(forward_one_position):
 		
-		var piece_in_front = board.current_board_matrix[forward_one_position.x][forward_one_position.y]
+		var piece_in_front = current_board_matrix[forward_one_position.x][forward_one_position.y]
 		if piece_in_front == null:
 			
 			var move_forward: Move = Move.new(piece_position, forward_one_position, Vector2i(-1,-1))
-			available_moves.append(move_forward)
+			if do_king_check:
+				if not Globals.board.would_move_compromise_king(move_forward,piece_team_is_white):
+					available_moves.append(move_forward)
+			else:
+				available_moves.append(move_forward)
 			
 			# move forward two on first move
-			if piece.total_move_count == 0:
+			if total_move_count == 0:
 				
 				var forward_two_position: Vector2i = Vector2i(piece_position.x, piece_position.y + (forward_direction * 2))
 				if is_in_bounds(forward_two_position):
 					
-					var piece_two_tiles_in_front = board.current_board_matrix[forward_two_position.x][forward_two_position.y]
+					var piece_two_tiles_in_front = current_board_matrix[forward_two_position.x][forward_two_position.y]
 					if piece_two_tiles_in_front == null:
 						
 						var move_forward_two: Move = Move.new(piece_position,forward_two_position,Vector2i(-1,-1))
-						available_moves.append(move_forward_two)
+						if do_king_check:
+							if not Globals.board.would_move_compromise_king(move_forward_two,piece_team_is_white):
+								available_moves.append(move_forward_two)
+						else:
+							available_moves.append(move_forward_two)
 	
 	
 	# diagonally attack & en passant
@@ -47,28 +56,32 @@ func _get_all_available_moves(board: Board, piece_position: Vector2i) -> Array[M
 	for diagonal_position: Vector2i in diagonal_positions:
 		
 		if is_in_bounds(diagonal_position):
-			var piece_at_position = board.current_board_matrix[diagonal_position.x][diagonal_position.y]
+			var piece_at_position = current_board_matrix[diagonal_position.x][diagonal_position.y]
 			
 			if piece_at_position != null:
 				
-				var piece_is_enemey: bool = (piece_at_position.team_is_white == not piece.team_is_white)
+				var piece_is_enemey: bool = (piece_at_position.team_is_white == not piece_team_is_white)
 				if piece_is_enemey:
 				
 					var attack_diagonally: Move = Move.new(piece_position, diagonal_position, diagonal_position)
-					available_moves.append(attack_diagonally)
-			
+					if do_king_check:
+						if not Globals.board.would_move_compromise_king(attack_diagonally,piece_team_is_white):
+							available_moves.append(attack_diagonally)
+					else:
+						available_moves.append(attack_diagonally)
+		
 			# en passant
 			else: 
 				var adjacent_position: Vector2i = Vector2i(diagonal_position.x,piece_position.y)
-				var adjacent_piece = board.current_board_matrix[adjacent_position.x][adjacent_position.y]
+				var adjacent_piece = current_board_matrix[adjacent_position.x][adjacent_position.y]
 				
 				if adjacent_piece != null:
 					 
-					var is_pawn: bool = (adjacent_piece.type == Piece.TYPE.PAWN)
-					var is_enemy: bool = (adjacent_piece.team_is_white == not piece.team_is_white)
+					var is_pawn: bool = (adjacent_piece.type == Globals.TYPE.PAWN)
+					var is_enemy: bool = (adjacent_piece.team_is_white == not piece_team_is_white)
 					if is_pawn and is_enemy:
 						
-						var last_move: Move = board.get_last_move()
+						var last_move: Move = Globals.board.get_last_move()
 						if last_move.final_position == adjacent_position:
 							
 							var change_in_position: int = last_move.final_position.y - last_move.inital_position.y
@@ -76,20 +89,12 @@ func _get_all_available_moves(board: Board, piece_position: Vector2i) -> Array[M
 							if pawn_did_double_time_last_move:
 								
 								var en_passant: Move = Move.new(piece_position,diagonal_position,adjacent_position)
-								available_moves.append(en_passant)
+								if do_king_check:
+									if not Globals.board.would_move_compromise_king(en_passant,piece_team_is_white):
+										available_moves.append(en_passant)
+								else:
+									available_moves.append(en_passant)
 	
 	
-	for move in available_moves:
-		if check_for_promotion(move.final_position,team_is_white):
-			move.do_promotion = true
-			move.promotion_move_set = self
 	
 	return available_moves
-
-func check_for_promotion(position: Vector2i, promotion_at_top: bool) -> bool:
-	if position.y == 0 and promotion_at_top:
-		return true
-	elif position.y == (8 - 1) and not promotion_at_top:
-		return true
-	else:
-		return false

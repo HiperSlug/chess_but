@@ -27,6 +27,10 @@ select={
 ]
 }
 
+[layer_names]
+
+2d_physics/layer_1="mouse"
+
 [rendering]
 
 renderer/rendering_method="gl_compatibility"

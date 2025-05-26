@@ -1,5 +1,10 @@
+@tool
 extends Node
 
+
+var board: Board
+
+var board_length: int = 8
 
 enum TYPE {
 	PAWN,

@@ -7,12 +7,13 @@
 
 [node name="MoveSetIcon" type="TextureRect"]
 z_index = 3
+custom_minimum_size = Vector2(40, 40)
 offset_right = 52.0
 offset_bottom = 52.0
+mouse_filter = 2
 texture = ExtResource("1_pnqq3")
 expand_mode = 1
 script = ExtResource("2_86sng")
-type = 1
 
 [node name="Panel" type="Panel" parent="."]
 z_index = 1
@@ -23,9 +24,11 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 2
 theme_override_styles/panel = ExtResource("2_vll0e")
 
 [node name="IdentificationIcon" type="TextureRect" parent="."]
+visible = false
 modulate = Color(0.775063, 0.775063, 0.775063, 1)
 z_index = 2
 z_as_relative = false
@@ -35,5 +38,6 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 2
 texture = ExtResource("3_vll0e")
 expand_mode = 1
