@@ -3,6 +3,8 @@ extends Control
 signal move_set_chosen(move_set: MoveSet)
 var team_is_white: bool = true
 
+var chosen_move_set: MoveSet
+
 func _ready() -> void:
 	for button: Button in $HBoxContainer.get_children():
 		button.team_is_white = team_is_white
@@ -10,4 +12,5 @@ func _ready() -> void:
 		button.get_child(0).team_is_white = team_is_white
 
 func on_move_set_chosen(move_set: MoveSet) -> void:
+	chosen_move_set = move_set
 	move_set_chosen.emit(move_set)

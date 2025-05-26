@@ -4,6 +4,7 @@ class_name Board
 
 signal piece_position_changed(piece: Piece, new_position: Vector2i)
 signal piece_removed(piece: Piece)
+signal promotion(piece: Piece)
 
 func _init(board_matrix = null) -> void:
 	if board_matrix != null:
@@ -48,11 +49,11 @@ func complete_move(move: Move) -> void:
 		if piece.team_is_white:
 			
 			if move.final_position.y == 0:
-				print("promote")
+				promotion.emit(piece)
 			
 		else:
 			if move.final_position.y == Globals.board_length - 1:
-				print("promote")
+				promotion.emit(piece)
 	
 	piece.total_move_count += 1
 	

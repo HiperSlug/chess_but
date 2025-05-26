@@ -6,7 +6,10 @@ class_name MoveSetIcon
 var move_set: MoveSet
 @export var override_visuals: bool
 @export var visual: Globals.TYPE
-@export var team_is_white: bool
+@export var team_is_white: bool:
+	set(value):
+		team_is_white = value
+		update_texture()
 
 func _ready() -> void:
 	update_texture()

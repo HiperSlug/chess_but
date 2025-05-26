@@ -16,8 +16,7 @@ expand_mode = 1
 script = ExtResource("2_86sng")
 
 [node name="Panel" type="Panel" parent="."]
-z_index = 1
-z_as_relative = false
+z_index = -1
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0

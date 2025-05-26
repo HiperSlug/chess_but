@@ -4,7 +4,6 @@ class_name Piece
 
 signal added_move_set(move_set: MoveSet)
 signal removed_move_set(move_set: MoveSet)
-@warning_ignore("unused_signal")
 signal type_changed()
 
 func _init(_type: Globals.TYPE, _team_is_white: bool, base_move_set: MoveSet) -> void:
@@ -12,7 +11,10 @@ func _init(_type: Globals.TYPE, _team_is_white: bool, base_move_set: MoveSet) ->
 	self.team_is_white = _team_is_white
 	self.move_sets.append(base_move_set)
 
-var type: Globals.TYPE
+var type: Globals.TYPE:
+	set(value):
+		type = value
+		type_changed.emit()
 var team_is_white: bool
 var total_move_count: int = 0
 var move_sets: Array[MoveSet] = []

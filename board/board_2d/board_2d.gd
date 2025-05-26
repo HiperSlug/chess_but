@@ -14,8 +14,29 @@ func reset_all_tile_effects() -> void:
 func initalize_board(_board: Board) -> void: # called by ChessGame
 	board = _board
 	input_move.connect(board.complete_move)
+	board.promotion.connect(on_pawn_promote)
 	initalize_board_tiles(Globals.board_length)
 	initalize_board_peices()
+
+var promotion_popup_scene: PackedScene = preload("res://popups/promotion_popup.tscn")
+func on_pawn_promote(piece: Piece) -> void:
+	var promotion_popup: Node = promotion_popup_scene.instantiate()
+	
+	add_child(promotion_popup)
+	await promotion_popup.move_set_chosen
+	
+	for move_set: MoveSet in piece.move_sets:
+		if move_set.team_is_white == piece.team_is_white:
+			if move_set.type == piece.type:
+				
+				piece.remove_move_set(move_set)
+				break
+	
+	var chosen_move_set: MoveSet = promotion_popup.chosen_move_set
+	piece.add_move_set(chosen_move_set)
+	piece.type = chosen_move_set.type
+	promotion_popup.queue_free()
+
 
 var tile_scene: PackedScene = preload("res://board/board_2d/tile.tscn")
 var tile_array: Array[Array]
@@ -96,7 +117,7 @@ func on_tile_pressed(tile_position: Vector2i) -> void:
 			var last_move: Move = matching_moves[0]
 			for move: Move in matching_moves:
 				if not move.equals(last_move):
-					print("competing Moves")
+					print("competing moves")
 					input_move.emit(matching_moves[0])
 					deselect_all()
 					return
