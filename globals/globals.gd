@@ -1,10 +1,8 @@
-@tool
 extends Node
 
-
-var board: Board
-
 var board_length: int = 8
+var board: Board
+var chess_game: ChessGame
 
 enum TYPE {
 	PAWN,
@@ -14,7 +12,6 @@ enum TYPE {
 	QUEEN,
 	KING,
 }
-
 
 var texture_dictionary: Dictionary = { # [TYPE][TEAM_IS_WHITE]
 	TYPE.PAWN: {

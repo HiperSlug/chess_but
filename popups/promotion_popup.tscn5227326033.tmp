@@ -49,6 +49,7 @@ grow_horizontal = 2
 grow_vertical = 2
 override_visuals = true
 visual = 1
+team_is_white = null
 
 [node name="Button2" type="Button" parent="HBoxContainer"]
 custom_minimum_size = Vector2(64, 64)
@@ -69,6 +70,7 @@ grow_horizontal = 2
 grow_vertical = 2
 override_visuals = true
 visual = 2
+team_is_white = null
 
 [node name="Button3" type="Button" parent="HBoxContainer"]
 custom_minimum_size = Vector2(64, 64)
@@ -89,6 +91,7 @@ grow_horizontal = 2
 grow_vertical = 2
 override_visuals = true
 visual = 3
+team_is_white = null
 
 [node name="Button4" type="Button" parent="HBoxContainer"]
 custom_minimum_size = Vector2(64, 64)
@@ -109,3 +112,4 @@ grow_horizontal = 2
 grow_vertical = 2
 override_visuals = true
 visual = 4
+team_is_white = null

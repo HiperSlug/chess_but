@@ -1,0 +1,115 @@
+[gd_scene load_steps=4 format=3 uid="uid://bv86l0007fkmc"]
+
+[ext_resource type="Script" uid="uid://clfngphfpabf7" path="res://popups/promotion_popup.gd" id="1_8cbuw"]
+[ext_resource type="Script" uid="uid://c76ygadqeef16" path="res://popups/promotion_button.gd" id="2_xbyx3"]
+[ext_resource type="PackedScene" uid="uid://bre3tnlljso6g" path="res://move_sets/icon/move_set_icon.tscn" id="2_y62y6"]
+
+[node name="PromotionPopup" type="Control"]
+layout_mode = 3
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_8cbuw")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -134.0
+offset_top = -32.0
+offset_right = 134.0
+offset_bottom = 32.0
+grow_horizontal = 2
+grow_vertical = 2
+alignment = 1
+
+[node name="Button" type="Button" parent="HBoxContainer"]
+custom_minimum_size = Vector2(64, 64)
+layout_mode = 2
+flat = true
+script = ExtResource("2_xbyx3")
+move_set_type = 1
+
+[node name="MoveSetIcon" parent="HBoxContainer/Button" instance=ExtResource("2_y62y6")]
+z_index = 6
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = 0.0
+offset_bottom = 0.0
+grow_horizontal = 2
+grow_vertical = 2
+override_visuals = true
+visual = 1
+team_is_white = null
+
+[node name="Button2" type="Button" parent="HBoxContainer"]
+custom_minimum_size = Vector2(64, 64)
+layout_mode = 2
+flat = true
+script = ExtResource("2_xbyx3")
+move_set_type = 2
+
+[node name="MoveSetIcon" parent="HBoxContainer/Button2" instance=ExtResource("2_y62y6")]
+z_index = 6
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = 0.0
+offset_bottom = 0.0
+grow_horizontal = 2
+grow_vertical = 2
+override_visuals = true
+visual = 2
+team_is_white = null
+
+[node name="Button3" type="Button" parent="HBoxContainer"]
+custom_minimum_size = Vector2(64, 64)
+layout_mode = 2
+flat = true
+script = ExtResource("2_xbyx3")
+move_set_type = 3
+
+[node name="MoveSetIcon" parent="HBoxContainer/Button3" instance=ExtResource("2_y62y6")]
+z_index = 6
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = 0.0
+offset_bottom = 0.0
+grow_horizontal = 2
+grow_vertical = 2
+override_visuals = true
+visual = 3
+team_is_white = null
+
+[node name="Button4" type="Button" parent="HBoxContainer"]
+custom_minimum_size = Vector2(64, 64)
+layout_mode = 2
+flat = true
+script = ExtResource("2_xbyx3")
+move_set_type = 4
+
+[node name="MoveSetIcon" parent="HBoxContainer/Button4" instance=ExtResource("2_y62y6")]
+z_index = 6
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = 0.0
+offset_bottom = 0.0
+grow_horizontal = 2
+grow_vertical = 2
+override_visuals = true
+visual = 4
+team_is_white = null

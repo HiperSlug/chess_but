@@ -1,0 +1,22 @@
+[gd_scene load_steps=4 format=3 uid="uid://cu5wgjp6e1sn6"]
+
+[ext_resource type="Script" uid="uid://c76ygadqeef16" path="res://popups/promotion/move_set_button.gd" id="1_ss442"]
+[ext_resource type="PackedScene" uid="uid://bre3tnlljso6g" path="res://move_sets/icon/move_set_icon.tscn" id="2_804gd"]
+[ext_resource type="Texture2D" uid="uid://cjpho4t8exo5m" path="res://piece_assets/bP.svg" id="3_pf6py"]
+
+[node name="Button" type="Button"]
+custom_minimum_size = Vector2(64, 64)
+flat = true
+script = ExtResource("1_ss442")
+
+[node name="MoveSetIcon" parent="." instance=ExtResource("2_804gd")]
+z_index = 6
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = 0.0
+offset_bottom = 0.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("3_pf6py")

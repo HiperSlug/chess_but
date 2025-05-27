@@ -1,0 +1,44 @@
+[gd_scene load_steps=3 format=3 uid="uid://bv86l0007fkmc"]
+
+[ext_resource type="Script" uid="uid://clfngphfpabf7" path="res://popups/promotion/promotion_popup.gd" id="1_8cbuw"]
+[ext_resource type="PackedScene" uid="uid://cu5wgjp6e1sn6" path="res://popups/promotion/move_set_button.tscn" id="2_v41ls"]
+
+[node name="PromotionPopup" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_8cbuw")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -134.0
+offset_top = -32.0
+offset_right = 134.0
+offset_bottom = 32.0
+grow_horizontal = 2
+grow_vertical = 2
+alignment = 1
+
+[node name="Button" parent="HBoxContainer" instance=ExtResource("2_v41ls")]
+layout_mode = 2
+type = 1
+
+[node name="Button2" parent="HBoxContainer" instance=ExtResource("2_v41ls")]
+layout_mode = 2
+type = 2
+
+[node name="Button3" parent="HBoxContainer" instance=ExtResource("2_v41ls")]
+layout_mode = 2
+type = 3
+
+[node name="Button4" parent="HBoxContainer" instance=ExtResource("2_v41ls")]
+layout_mode = 2
+type = 4

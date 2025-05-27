@@ -14,28 +14,11 @@ func reset_all_tile_effects() -> void:
 func initalize_board(_board: Board) -> void: # called by ChessGame
 	board = _board
 	input_move.connect(board.complete_move)
-	board.promotion.connect(on_pawn_promote)
+	
 	initalize_board_tiles(Globals.board_length)
 	initalize_board_peices()
 
-var promotion_popup_scene: PackedScene = preload("res://popups/promotion_popup.tscn")
-func on_pawn_promote(piece: Piece) -> void:
-	var promotion_popup: Node = promotion_popup_scene.instantiate()
-	
-	add_child(promotion_popup)
-	await promotion_popup.move_set_chosen
-	
-	for move_set: MoveSet in piece.move_sets:
-		if move_set.team_is_white == piece.team_is_white:
-			if move_set.type == piece.type:
-				
-				piece.remove_move_set(move_set)
-				break
-	
-	var chosen_move_set: MoveSet = promotion_popup.chosen_move_set
-	piece.add_move_set(chosen_move_set)
-	piece.type = chosen_move_set.type
-	promotion_popup.queue_free()
+
 
 
 var tile_scene: PackedScene = preload("res://board/board_2d/tile.tscn")
@@ -88,6 +71,7 @@ func initalize_board_peices() -> void:
 			board.piece_position_changed.connect(piece_2d.on_board_piece_position_changed)
 			board.piece_removed.connect(piece_2d.on_board_piece_removed)
 			
+			
 			add_child(piece_2d)
 
 signal input_move(move: Move)
@@ -99,33 +83,51 @@ var can_deselect: bool = false
 func on_tile_pressed(tile_position: Vector2i) -> void: 
 	reset_all_tile_effects()
 	
+	# if this tile is already selected next tile released will unselect piece
 	if tile_position == selected_position:
 		can_deselect = true
 	
-	var matching_moves: Array[Move] = []
-	for move: Move in displayed_moves:
-		if move.final_position == tile_position:
-			matching_moves.append(move) 
+	else:
+		# otherwise figure out if the pressed tile is one that is currently availabel to move to.
+		
+		# get all moves that end at selected tile
+		var matching_moves: Array[Move] = []
+		for move: Move in displayed_moves:
+			if move.final_position == tile_position:
+				matching_moves.append(move) 
+		
+		# if there is at least 1 move that matches then an action has been taken
+		if not matching_moves.size() == 0:
 			
-	if not matching_moves.size() == 0:
-		if matching_moves.size() == 1:
-			input_move.emit(matching_moves[0])
-			deselect_all()
-			return
-		else:
-			var all_equal: bool = true
-			var last_move: Move = matching_moves[0]
-			for move: Move in matching_moves:
-				if not move.equals(last_move):
-					print("competing moves")
+			# if there is only one move, do the action
+			if matching_moves.size() == 1:
+				input_move.emit(matching_moves[0])
+				deselect_all()
+				return
+			# if there is more than one move and they are different, then add a popup to select which move to do.
+			else:
+				var last_move: Move = matching_moves[0]
+				var all_equal: bool = true
+				for move: Move in matching_moves:
+					if not move.equals(last_move):
+						all_equal = false
+						break
+				
+				# they are all the same
+				if all_equal:
 					input_move.emit(matching_moves[0])
 					deselect_all()
 					return
-			input_move.emit(matching_moves[0])
-			deselect_all()
-			return
+				
+				else:
+					var best_moves: Move = choose_best_move(matching_moves)
+					input_move.emit(best_moves)
+					deselect_all()
+					return
 	
+	# we have now decided we are not completing an action.
 	
+	# display available moves
 	var availabe_moves = board.get_availabe_moves_at_position(tile_position)
 	
 	# set tile effects
@@ -147,43 +149,73 @@ func on_tile_pressed(tile_position: Vector2i) -> void:
 
 func on_tile_released(tile_position: Vector2i) -> void:
 	
+	
 	if tile_position == selected_position:
 		if can_deselect:
 			reset_all_tile_effects()
 			deselect_all()
 			can_deselect = false
+		# if we arent deselecting, aka we just clicked on the piece and let go, then dont do stuff.
 		return
-		
+	
+	
 	reset_all_tile_effects()
 	
+	# get all moves that end at selected tile
 	var matching_moves: Array[Move] = []
 	for move: Move in displayed_moves:
 		if move.final_position == tile_position:
 			matching_moves.append(move) 
-			
+	
+	# if there is at least 1 move that matches then an action has been taken
 	if not matching_moves.size() == 0:
+		
+		# if there is only one move, do the action
 		if matching_moves.size() == 1:
 			input_move.emit(matching_moves[0])
 			deselect_all()
 			return
+		# if there is more than one move and they are different, then add a popup to select which move to do.
 		else:
-			var all_equal: bool = true
 			var last_move: Move = matching_moves[0]
+			var all_equal: bool = true
 			for move: Move in matching_moves:
 				if not move.equals(last_move):
-					print("competing Moves")
-					input_move.emit(matching_moves[0])
-					deselect_all()
-					return
+					all_equal = false
+					break
 			
+			# they are all the same
+			if all_equal:
+				input_move.emit(matching_moves[0])
+				deselect_all()
+				return
 			
-			input_move.emit(matching_moves[0])
-			deselect_all()
-			return
+			else:
+				var best_moves: Move = choose_best_move(matching_moves)
+				input_move.emit(best_moves)
+				deselect_all()
+				return
 	
 	
 	deselect_all()
 
+
+func choose_best_move(moves: Array[Move]) -> Move:
+	var moves_with_secondary: Array[Move]
+	var moves_with_kill: Array[Move]
+	
+	for move: Move in moves:
+		if move.kill_position != Vector2i(-1,-1):
+			moves_with_kill.append(move)
+		if move.secondary_move != null:
+			moves_with_secondary.append(move)
+	
+	if moves_with_secondary.size() > 0:
+		return moves_with_secondary.pick_random()
+	if moves_with_kill.size() > 0:
+		return moves_with_kill.pick_random()
+	else:
+		return moves.pick_random()
 
 func deselect_all() -> void:
 	selected_position = null
