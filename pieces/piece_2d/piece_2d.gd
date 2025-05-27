@@ -8,6 +8,12 @@ func _ready() -> void:
 	
 	for move_set: MoveSet in piece.move_sets:
 		add_move_set_icon(move_set)
+	
+	Globals.set_mouse_pickable_enabled.connect(set_enabled)
+
+func set_enabled(enabled: bool) -> void:
+	$Area2D/CollisionShape2D.set_deferred("disabled", not enabled)
+
 
 func update_texture() -> void:
 	$Sprite2D.texture = Globals.texture_dictionary[piece.type][piece.team_is_white]

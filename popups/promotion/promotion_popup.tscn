@@ -4,6 +4,7 @@
 [ext_resource type="PackedScene" uid="uid://cu5wgjp6e1sn6" path="res://popups/promotion/move_set_button.tscn" id="2_v41ls"]
 
 [node name="PromotionPopup" type="Control"]
+z_index = 1
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -11,6 +12,15 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_8cbuw")
+
+[node name="ColorRect" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(1, 1, 1, 0.0784314)
 
 [node name="HBoxContainer" type="HBoxContainer" parent="."]
 layout_mode = 1

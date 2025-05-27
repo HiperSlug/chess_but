@@ -36,3 +36,9 @@ func set_tile_effect(new_tile_effect: TILE_EFFECT) -> void:
 		TILE_EFFECT.CAPTURE:
 			modulate = Color.RED
 	tile_effect = new_tile_effect
+
+func _ready() -> void:
+	Globals.set_mouse_pickable_enabled.connect(set_enabled)
+
+func set_enabled(enabled: bool) -> void:
+	$Area2D/CollisionShape2D.set_deferred("disabled", not enabled)
