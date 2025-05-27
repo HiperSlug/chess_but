@@ -31,3 +31,19 @@ func equals(move: Move) -> bool:
 	
 	
 	return same_final_position and same_inital_position and same_kill_position and same_secondary_move
+
+func serialize() -> Dictionary:
+	var dictionary: Dictionary = {
+		"inital_position" : inital_position,
+		"final_position" : final_position,
+		"kill_position" : kill_position,
+	}
+	if secondary_move == null:
+		dictionary["secondary_move"] = null
+	else:
+		dictionary["secondary_move"] = secondary_move.serialize()
+	
+	return dictionary
+
+static func deserialize(dictionary: Dictionary) -> Move:
+	return Move.new(dictionary["inital_position"], dictionary["final_position"], dictionary["kill_position"], dictionary["secondary_move"])

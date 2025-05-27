@@ -303,39 +303,40 @@ func get_king_available_moves(board: Board, piece_position: Vector2i, piece_team
 			var rook_position: Vector2i = new_position # lol
 			
 			# if there is a piece there
-			var piece_at_rook_position = board.get_contents_at_position(rook_position)
-			if piece_at_rook_position != null:
-				
-				# and the piece is a rook on our team who hasnt moved
-				var piece_is_rook: bool = piece_at_rook_position.type == Globals.TYPE.ROOK
-				var piece_is_same_team: bool = piece_at_rook_position.team_is_white == piece_team_is_white
-				var is_rooks_first_move: bool = piece_at_rook_position.total_move_count == 0
-				if piece_is_rook and piece_is_same_team and is_rooks_first_move:
-						
-						var one_towards_direction: Vector2i = piece_position + direction
-						var two_towards_direction: Vector2i = piece_position + (direction * 2)
-						
-						# we need to check if the king is under attack, the inbetween position is under attack, and if the final position is under attack
-						var rook_move: Move = Move.new(rook_position, one_towards_direction)
-						var castle_move: Move = Move.new(piece_position, two_towards_direction, Vector2i(-1, -1), rook_move)
-						# king safety check
-						if do_king_safety_check:
+			if is_in_bounds(rook_position):
+				var piece_at_rook_position = board.get_contents_at_position(rook_position)
+				if piece_at_rook_position != null:
+					
+					# and the piece is a rook on our team who hasnt moved
+					var piece_is_rook: bool = piece_at_rook_position.type == Globals.TYPE.ROOK
+					var piece_is_same_team: bool = piece_at_rook_position.team_is_white == piece_team_is_white
+					var is_rooks_first_move: bool = piece_at_rook_position.total_move_count == 0
+					if piece_is_rook and piece_is_same_team and is_rooks_first_move:
 							
-							# king currently under attack
-							var currently_under_attack: bool = board.is_piece_at_position_being_attacked(piece_position)
+							var one_towards_direction: Vector2i = piece_position + direction
+							var two_towards_direction: Vector2i = piece_position + (direction * 2)
 							
-							# inbetween position under attack
-							var inbetween_move: Move = Move.new(piece_position, one_towards_direction)
-							var inbetween_move_under_attack: bool = board.would_king_be_in_check_after_move(inbetween_move, piece_team_is_white)
-							
-							# final position under attack
-							var final_move_under_attack: bool = board.would_king_be_in_check_after_move(castle_move, piece_team_is_white)
-							
-							# add final move
-							if not currently_under_attack and not inbetween_move_under_attack and not final_move_under_attack:
+							# we need to check if the king is under attack, the inbetween position is under attack, and if the final position is under attack
+							var rook_move: Move = Move.new(rook_position, one_towards_direction)
+							var castle_move: Move = Move.new(piece_position, two_towards_direction, Vector2i(-1, -1), rook_move)
+							# king safety check
+							if do_king_safety_check:
+								
+								# king currently under attack
+								var currently_under_attack: bool = board.is_piece_at_position_being_attacked(piece_position)
+								
+								# inbetween position under attack
+								var inbetween_move: Move = Move.new(piece_position, one_towards_direction)
+								var inbetween_move_under_attack: bool = board.would_king_be_in_check_after_move(inbetween_move, piece_team_is_white)
+								
+								# final position under attack
+								var final_move_under_attack: bool = board.would_king_be_in_check_after_move(castle_move, piece_team_is_white)
+								
+								# add final move
+								if not currently_under_attack and not inbetween_move_under_attack and not final_move_under_attack:
+									availabe_moves.append(castle_move)
+							else:
 								availabe_moves.append(castle_move)
-						else:
-							availabe_moves.append(castle_move)
 	
 	return availabe_moves
 
