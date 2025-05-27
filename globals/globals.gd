@@ -7,6 +7,7 @@ var board_length: int = 8
 var board: Board
 var chess_game: ChessGame
 
+
 enum TYPE {
 	PAWN,
 	ROOK,

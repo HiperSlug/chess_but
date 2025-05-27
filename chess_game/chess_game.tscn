@@ -7,7 +7,7 @@
 script = ExtResource("1_wgevo")
 
 [node name="Board2D" parent="." instance=ExtResource("3_tydxo")]
-position = Vector2(515, 328)
+position = Vector2(574, 307)
 scale = Vector2(1.2, 1.2)
 
-[connection signal="input_move" from="Board2D" to="." method="_on_board_2d_input_move"]
+[connection signal="input_move" from="Board2D" to="." method="on_input_move"]

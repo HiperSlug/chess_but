@@ -3,11 +3,12 @@ class_name ChessGame
 
 
 
+var turn_is_white: bool = true
 var board: Board = Board.new(Globals.board_length)
 func _ready() -> void:
 	Globals.board = board
 	Globals.chess_game = self
-	board.move_completed.connect(save_board)
+	
 	
 	set_normal_starting_board(board)
 	$Board2D.initalize_board(board)
@@ -15,12 +16,22 @@ func _ready() -> void:
 var board_history: Array[Board] = []
 var move_history: Array[Move] = []
 
+func on_input_move(move: Move) -> void:
+	save_board(move)
+	board.complete_move(move)
+	var win: bool = board.check_for_loss(not turn_is_white)
+	if win:
+		print("GAME FINISHED")
+	turn_is_white = not turn_is_white
+	$Board2D.turn_is_white = turn_is_white
+
 func save_board(move: Move) -> void:
 	board_history.append(board.duplicate())
 	move_history.append(move)
 
 func get_last_move() -> Move:
 	return move_history[-1]
+
 
 func set_normal_starting_board(_board: Board) -> void:
 	

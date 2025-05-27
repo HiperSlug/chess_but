@@ -3,6 +3,8 @@ class_name Board2D
 
 var board: Board
 
+var turn_is_white: bool = true
+
 func set_tile_effect(tile_position: Vector2i, effect: Tile.TILE_EFFECT) -> void:
 	tile_array[tile_position.x][tile_position.y].set_tile_effect(effect)
 
@@ -13,7 +15,6 @@ func reset_all_tile_effects() -> void:
 
 func initalize_board(_board: Board) -> void: # called by ChessGame
 	board = _board
-	input_move.connect(board.complete_move)
 	
 	initalize_board_tiles(Globals.board_length)
 	initalize_board_peices()
@@ -104,7 +105,7 @@ func on_tile_pressed(tile_position: Vector2i) -> void:
 				input_move.emit(matching_moves[0])
 				deselect_all()
 				return
-			# if there is more than one move and they are different, then add a popup to select which move to do.
+			# if there is more than one move and they are different, then use magic randomness to choose the best one.
 			else:
 				var last_move: Move = matching_moves[0]
 				var all_equal: bool = true
@@ -127,23 +128,29 @@ func on_tile_pressed(tile_position: Vector2i) -> void:
 	
 	# we have now decided we are not completing an action.
 	
-	# display available moves
-	var availabe_moves = board.get_availabe_moves_at_position(tile_position)
 	
 	# set tile effects
 	set_tile_effect(tile_position, Tile.TILE_EFFECT.SELECTED)
 	selected_position = tile_position
 	
-	for move: Move in availabe_moves:
-		var end_position: Vector2i = move.final_position
-		
-		if move.kill_position != Vector2i(-1,-1):
-			set_tile_effect(end_position,Tile.TILE_EFFECT.CAPTURE)
-		else:
-			set_tile_effect(end_position,Tile.TILE_EFFECT.MOVE)
 	
-	# store moves
-	displayed_moves = availabe_moves
+	# if it's this teams turn then do a move
+	
+	if board.get_contents_at_position(tile_position) != null and board.get_team_at_position(tile_position) == turn_is_white:
+		
+		# display available moves
+		var availabe_moves = board.get_availabe_moves_at_position(tile_position)
+		
+		for move: Move in availabe_moves:
+			var end_position: Vector2i = move.final_position
+			
+			if move.kill_position != Vector2i(-1,-1):
+				set_tile_effect(end_position,Tile.TILE_EFFECT.CAPTURE)
+			else:
+				set_tile_effect(end_position,Tile.TILE_EFFECT.MOVE)
+		
+		# store moves
+		displayed_moves = availabe_moves
 	
 	
 

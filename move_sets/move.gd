@@ -6,7 +6,6 @@ var final_position: Vector2i
 var kill_position: Vector2i # (-1, -1) means nothing is being killed
 var secondary_move: Move
 
-
 func _init(_inital_position: Vector2i = Vector2i.ZERO, _final_position: Vector2i = Vector2i.ZERO, _kill_position: Vector2i = Vector2i(-1,-1), _secondary_move = null) -> void:
 	self.inital_position = _inital_position
 	self.final_position = _final_position

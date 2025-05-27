@@ -39,11 +39,17 @@ func duplicate() -> Board:
 	var new_board: Board = Board.new(board_length, new_board_matrix)
 	return new_board
 
-signal move_completed(move: Move)
+func get_team_at_position(position: Vector2i):
+	
+	var piece = get_contents_at_position(position)
+	if piece == null:
+		return null
+	
+	return piece.team_is_white
 
 func complete_move(move: Move) -> void:
 	
-	move_completed.emit(move)
+	
 	
 	var piece: Piece = get_contents_at_position(move.inital_position)
 	
@@ -75,10 +81,22 @@ func complete_move(move: Move) -> void:
 	
 	piece.total_move_count += 1
 	
-	if move.secondary_move == null:
-		return
+	if move.secondary_move != null:
+		complete_move(move.secondary_move)
 	
-	complete_move(move.secondary_move)
+
+func check_for_loss(team_is_white: bool) -> bool:
+	for y: int in range(board_length):
+		for x: int in range(board_length):
+			
+			var position: Vector2i = Vector2i(x,y)
+			
+			var contents = get_contents_at_position(position)
+			if contents != null and contents.team_is_white == team_is_white:
+				var available_moves_for_piece: Array[Move] = get_availabe_moves_at_position(position)
+				if available_moves_for_piece.size() > 0:
+					return false
+	return true
 
 
 
