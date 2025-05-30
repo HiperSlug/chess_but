@@ -17,7 +17,7 @@ var total_move_count: int = 0
 var move_sets: Array[MoveSet] = []
 
 @warning_ignore("unused_signal") # called by board
-signal get_promotion_type() # given to piece2d or piece3d to get a promotion popup
+signal get_promotion_type(position: Vector2i) # given to piece2d or piece3d to get a promotion popup
 
 func duplicate(deep: bool = true) -> Piece:
 	var new_piece: Piece = Piece.new(type, team_is_white, move_sets.duplicate(deep))
@@ -41,7 +41,7 @@ func promote(new_move_set_type: Globals.TYPE) -> void:
 			break
 	
 	# add new moveset
-	var new_move_set: MoveSet = MoveSet.new(new_move_set_type, team_is_white)
+	var new_move_set: MoveSet = MoveSet.new(new_move_set_type, ChessGame.new(), team_is_white)
 	add_move_set(new_move_set)
 
 func get_all_available_moves(board: Board, piece_position: Vector2i, do_king_check: bool = true) -> Array[Move]:

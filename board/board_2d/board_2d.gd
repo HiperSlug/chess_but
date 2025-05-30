@@ -5,6 +5,15 @@ var board: Board
 
 var turn_is_white: bool = true
 
+var team_is_white: bool = true
+
+
+
+func set_turn(_turn_is_white: bool) -> void:
+	turn_is_white = _turn_is_white
+	if not NetworkHandler.is_in_match:
+		set_team(turn_is_white)
+
 func set_tile_effect(tile_position: Vector2i, effect: Tile.TILE_EFFECT) -> void:
 	tile_array[tile_position.x][tile_position.y].set_tile_effect(effect)
 
@@ -16,8 +25,11 @@ func reset_all_tile_effects() -> void:
 func initalize_board(_board: Board) -> void: # called by ChessGame
 	board = _board
 	
-	initalize_board_tiles(Globals.board_length)
+	initalize_board_tiles(board.board_length)
 	initalize_board_peices()
+	
+	var game_gui: Control = load("res://gui/game_gui.tscn").instantiate()
+	$CanvasLayer.add_child(game_gui)
 
 
 
@@ -54,8 +66,8 @@ func initalize_board_tiles(board_length: int) -> void:
 var id_to_piece_2d_dictionary: Dictionary
 var piece_2d_scene: PackedScene = preload("res://pieces/piece_2d/piece_2d.tscn")
 func initalize_board_peices() -> void:
-	for x: int in range(Globals.board_length):
-		for y: int in range(Globals.board_length):
+	for x: int in range(board.board_length):
+		for y: int in range(board.board_length):
 			
 			# if piece exists
 			var piece = board.current_board_matrix[x][y]
@@ -66,14 +78,25 @@ func initalize_board_peices() -> void:
 			
 			piece_2d.set_piece(piece)
 			
-			piece_2d.position.x = Tile.tile_size * (x - 4)
-			piece_2d.position.y = Tile.tile_size * (y - 4)
+			piece_2d.position.x = Tile.tile_size * (x - 3.5)
+			piece_2d.position.y = Tile.tile_size * (y - 3.5)
 			
 			board.piece_position_changed.connect(piece_2d.on_board_piece_position_changed)
 			board.piece_removed.connect(piece_2d.on_board_piece_removed)
 			
 			
-			add_child(piece_2d)
+			$Pieces.add_child(piece_2d)
+
+func set_team(_team_is_white: bool) -> void:
+	team_is_white = _team_is_white
+	if _team_is_white:
+		rotation = 0
+		for child: Node2D in $Pieces.get_children():
+			child.rotation = 0
+	else:
+		rotation = PI
+		for child: Node2D in $Pieces.get_children():
+			child.rotation = PI
 
 signal input_move(move: Move)
 var displayed_moves: Array[Move]
@@ -83,6 +106,7 @@ var can_deselect: bool = false
 
 func on_tile_pressed(tile_position: Vector2i) -> void: 
 	reset_all_tile_effects()
+	
 	
 	# if this tile is already selected next tile released will unselect piece
 	if tile_position == selected_position:
@@ -130,27 +154,33 @@ func on_tile_pressed(tile_position: Vector2i) -> void:
 	
 	
 	# set tile effects
-	set_tile_effect(tile_position, Tile.TILE_EFFECT.SELECTED)
-	selected_position = tile_position
+	
+	
 	
 	
 	# if it's this teams turn then do a move
+	var is_teams_turn: bool = board.get_contents_at_position(tile_position) != null and board.get_team_at_position(tile_position) == turn_is_white
 	
-	if board.get_contents_at_position(tile_position) != null and board.get_team_at_position(tile_position) == turn_is_white:
+	if is_teams_turn:
+		var team_is_our_team: bool = not NetworkHandler.is_in_match or NetworkHandler.team_is_white == board.get_team_at_position(tile_position)
 		
-		# display available moves
-		var availabe_moves = board.get_availabe_moves_at_position(tile_position)
-		
-		for move: Move in availabe_moves:
-			var end_position: Vector2i = move.final_position
+		if team_is_our_team: 
+			set_tile_effect(tile_position, Tile.TILE_EFFECT.SELECTED)
+			selected_position = tile_position
 			
-			if move.kill_position != Vector2i(-1,-1):
-				set_tile_effect(end_position,Tile.TILE_EFFECT.CAPTURE)
-			else:
-				set_tile_effect(end_position,Tile.TILE_EFFECT.MOVE)
-		
-		# store moves
-		displayed_moves = availabe_moves
+			# display available moves
+			var availabe_moves = board.get_availabe_moves_at_position(tile_position)
+			
+			for move: Move in availabe_moves:
+				var end_position: Vector2i = move.final_position
+				
+				if move.kill_position != Vector2i(-1,-1):
+					set_tile_effect(end_position,Tile.TILE_EFFECT.CAPTURE)
+				else:
+					set_tile_effect(end_position,Tile.TILE_EFFECT.MOVE)
+			
+			# store moves
+			displayed_moves = availabe_moves
 	
 	
 

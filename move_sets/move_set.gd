@@ -3,8 +3,10 @@ class_name MoveSet
 
 var team_is_white: bool
 var type: Globals.TYPE
+var chess_game: ChessGame
 
-func _init(_type: Globals.TYPE, _team_is_white: bool = true) -> void:
+func _init(_type: Globals.TYPE, _chess_game: ChessGame, _team_is_white: bool = true) -> void:
+	self.chess_game = _chess_game
 	self.type = _type
 	self.team_is_white = _team_is_white
 
@@ -45,9 +47,9 @@ func get_all_available_moves(board: Board, piece_position: Vector2i, piece_team_
 	return available_moves
 
 
-func is_in_bounds(position: Vector2i) -> bool:
-	var x_in_bounds: bool = position.x < Globals.board_length and position.x >= 0
-	var y_in_bounds: bool = position.y < Globals.board_length and position.y >= 0
+func is_in_bounds(position: Vector2i, board: Board) -> bool:
+	var x_in_bounds: bool = position.x < board.board_length and position.x >= 0
+	var y_in_bounds: bool = position.y < board.board_length and position.y >= 0
 	return x_in_bounds and y_in_bounds
 
 
@@ -56,7 +58,7 @@ func get_pawn_available_moves(board: Board, piece_position: Vector2i, piece_team
 	var available_moves: Array[Move]
 	
 	var forward_direction: Vector2i
-	if piece_team_is_white:
+	if team_is_white:
 		forward_direction = Vector2i.UP
 	else:
 		forward_direction = Vector2i.DOWN
@@ -66,7 +68,7 @@ func get_pawn_available_moves(board: Board, piece_position: Vector2i, piece_team
 	
 	# is in bounds
 	var forward_one_position: Vector2i = piece_position + forward_direction
-	if is_in_bounds(forward_one_position):
+	if is_in_bounds(forward_one_position, board):
 		
 		# is empty
 		var contents_forward_one_position = board.get_contents_at_position(forward_one_position)
@@ -90,7 +92,7 @@ func get_pawn_available_moves(board: Board, piece_position: Vector2i, piece_team
 				
 				# is in bounds
 				var forward_two_position: Vector2i = piece_position + (forward_direction * 2)
-				if is_in_bounds(forward_two_position):
+				if is_in_bounds(forward_two_position, board):
 					
 					# is empty
 					var contents_forward_two_positions = board.get_contents_at_position(forward_two_position)
@@ -116,7 +118,7 @@ func get_pawn_available_moves(board: Board, piece_position: Vector2i, piece_team
 	
 	for diagonal_position: Vector2i in diagonal_positions:
 		# is in bounds
-		if is_in_bounds(diagonal_position):
+		if is_in_bounds(diagonal_position, board):
 			
 			# is occupied
 			var contents_diagonal = board.get_contents_at_position(diagonal_position)
@@ -150,7 +152,7 @@ func get_pawn_available_moves(board: Board, piece_position: Vector2i, piece_team
 					if is_pawn and is_enemy:
 						
 						# the enemy pawn moved last turn
-						var last_move: Move = Globals.chess_game.get_last_move() 
+						var last_move: Move = chess_game.get_last_move() 
 						if last_move.final_position == adjacent_position:
 							
 							# the enemy pawn had done double time last turn
@@ -191,7 +193,7 @@ func get_knight_available_moves(board: Board, piece_position: Vector2i, piece_te
 		
 		# is in bounds
 		var new_position: Vector2i = piece_position + position
-		if is_in_bounds(new_position): 
+		if is_in_bounds(new_position, board): 
 			
 			# if empty: move
 			var radial_contents = board.get_contents_at_position(new_position)
@@ -239,7 +241,7 @@ func get_king_available_moves(board: Board, piece_position: Vector2i, piece_team
 		
 		# is in bounds
 		var new_position: Vector2i = piece_position + position
-		if is_in_bounds(new_position):
+		if is_in_bounds(new_position, board):
 			
 			# if is empty: move
 			var contents = board.get_contents_at_position(new_position)
@@ -282,7 +284,7 @@ func get_king_available_moves(board: Board, piece_position: Vector2i, piece_team
 			# iterating till the last tile of the board, or until it hits a piece
 			var new_position: Vector2i = piece_position + direction
 			var path_clear: bool = true
-			while is_in_bounds(new_position + direction): # "+ direction" stops it one short of the edge of the board allowing for an extra piece (hopefully which is a rook)
+			while is_in_bounds(new_position + direction, board): # "+ direction" stops it one short of the edge of the board allowing for an extra piece (hopefully which is a rook)
 				
 				# checking for collision
 				var contents = board.get_contents_at_position(new_position)
@@ -303,7 +305,7 @@ func get_king_available_moves(board: Board, piece_position: Vector2i, piece_team
 			var rook_position: Vector2i = new_position # lol
 			
 			# if there is a piece there
-			if is_in_bounds(rook_position):
+			if is_in_bounds(rook_position, board):
 				var piece_at_rook_position = board.get_contents_at_position(rook_position)
 				if piece_at_rook_position != null:
 					
@@ -355,7 +357,7 @@ func get_horizontal_and_vertical_available_moves(board: Board, piece_position: V
 		
 		# iterating towards direction till it hits the boundary or is broken out by hitting another piece
 		var new_position: Vector2i = piece_position + direction
-		while is_in_bounds(new_position): 
+		while is_in_bounds(new_position, board): 
 			
 			# if its empty: move
 			var contents_in_direction = board.get_contents_at_position(new_position)
@@ -365,9 +367,12 @@ func get_horizontal_and_vertical_available_moves(board: Board, piece_position: V
 				var move_horizontally: Move = Move.new(piece_position, new_position)
 				# king safety check
 				if do_king_safety_check:
+					
 					if not board.would_king_be_in_check_after_move(move_horizontally, piece_team_is_white):
-						availabe_moves.append(move_horizontally)
 						
+						availabe_moves.append(move_horizontally)
+					
+					
 				else:
 					availabe_moves.append(move_horizontally)
 				
@@ -408,7 +413,7 @@ func get_diagonal_available_moves(board: Board, piece_position: Vector2i, piece_
 		
 		# iterating towards direction till it hits the boundary or is broken out by hitting another piece
 		var new_position: Vector2i = piece_position + direction
-		while is_in_bounds(new_position): 
+		while is_in_bounds(new_position, board): 
 			
 			# if its empty: move
 			var contents_in_direction = board.get_contents_at_position(new_position)

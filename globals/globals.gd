@@ -3,11 +3,6 @@ extends Node
 @warning_ignore("unused_signal") # called by popups upon entering and exiting
 signal set_mouse_pickable_enabled(enabled: bool)
 
-var board_length: int = 8
-var board: Board
-var chess_game: ChessGame
-
-
 enum TYPE {
 	PAWN,
 	ROOK,

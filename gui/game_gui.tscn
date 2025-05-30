@@ -1,0 +1,54 @@
+[gd_scene load_steps=3 format=3 uid="uid://cnvsdf7enjfhc"]
+
+[ext_resource type="Script" uid="uid://pn3rmj3jp3ma" path="res://gui/game_gui.gd" id="1_6hs8q"]
+[ext_resource type="Script" uid="uid://ddw86tf5n0a3p" path="res://gui/chat.gd" id="2_jhgb0"]
+
+[node name="GameGUI" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_6hs8q")
+
+[node name="Chat" type="ColorRect" parent="."]
+layout_mode = 0
+offset_left = 59.0
+offset_top = 146.0
+offset_right = 236.0
+offset_bottom = 431.0
+color = Color(0.505882, 0.505882, 0.505882, 0.470588)
+script = ExtResource("2_jhgb0")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Chat"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Control" type="Control" parent="Chat/VBoxContainer"]
+clip_contents = true
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Chat/VBoxContainer/Control"]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -250.0
+grow_horizontal = 2
+grow_vertical = 0
+metadata/_edit_use_anchors_ = true
+
+[node name="LineEdit" type="LineEdit" parent="Chat/VBoxContainer"]
+layout_mode = 2
+placeholder_text = "chat"
+keep_editing_on_text_submit = true
+
+[connection signal="gui_input" from="Chat/VBoxContainer/Control" to="." method="_on_control_gui_input"]
+[connection signal="text_submitted" from="Chat/VBoxContainer/LineEdit" to="." method="_on_line_edit_text_submitted"]

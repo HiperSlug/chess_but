@@ -39,8 +39,8 @@ func set_piece(_piece) -> void:
 
 func on_board_piece_position_changed(_piece: Piece, new_position: Vector2i) -> void:
 	if piece == _piece:
-		position.x = Tile.tile_size * (new_position.x - 4)
-		position.y = Tile.tile_size * (new_position.y - 4)
+		position.x = Tile.tile_size * (new_position.x - 3.5)
+		position.y = Tile.tile_size * (new_position.y - 3.5)
 
 func on_board_piece_removed(_piece: Piece) -> void:
 	if piece == _piece:
@@ -96,20 +96,18 @@ func _process(_delta: float) -> void:
 
 var promotion_popup_scene: PackedScene = preload("res://popups/promotion/promotion_popup.tscn")
 
-var promotion_popup_relative_position_white: Vector2i = Vector2i(32,96)
-var promotion_popup_relative_position_black: Vector2i = Vector2i(32,-32)
-func on_piece_get_promotion_type() -> void:
+var promotion_popup_relative_position: Vector2i = Vector2i(0,64)
+func on_piece_get_promotion_type(pos: Vector2i) -> void:
 	var promotion_popup: Node = promotion_popup_scene.instantiate()
 	promotion_popup.set_team(piece.team_is_white)
 	
-	if piece.team_is_white:
-		promotion_popup.position = promotion_popup_relative_position_white
-	else:
-		promotion_popup.position = promotion_popup_relative_position_black
+	promotion_popup.position = promotion_popup_relative_position
 	
 	add_child(promotion_popup)
 	var chosen_move_set_type: Globals.TYPE = await promotion_popup.move_set_chosen
-	
-	piece.promote(chosen_move_set_type)
+	if NetworkHandler.is_in_match:
+		NetworkHandler.send_promotion_type.rpc_id(1, NetworkHandler.current_match_id, chosen_move_set_type, pos)
+	else:
+		piece.promote(chosen_move_set_type)
 	
 	promotion_popup.queue_free()

@@ -5,7 +5,7 @@ class_name Board
 signal piece_position_changed(piece: Piece, new_position: Vector2i)
 signal piece_removed(piece: Piece)
 
-var board_length: int
+var board_length: int = 8
 var current_board_matrix: Array[Array]
 
 func _init(_board_length: int, board_matrix = null) -> void:
@@ -47,9 +47,7 @@ func get_team_at_position(position: Vector2i):
 	
 	return piece.team_is_white
 
-func complete_move(move: Move) -> void:
-	
-	
+func complete_move(move: Move, check_for_promotion: bool = true) -> void:
 	
 	var piece: Piece = get_contents_at_position(move.inital_position)
 	
@@ -69,15 +67,24 @@ func complete_move(move: Move) -> void:
 	piece_position_changed.emit(piece, move.final_position)
 	
 	# promotion
-	if piece.type == Globals.TYPE.PAWN:
-		
-		if piece.team_is_white:
-			if move.final_position.y == 0:
-				piece.get_promotion_type.emit()
-			
-		else:
-			if move.final_position.y == board_length - 1:
-				piece.get_promotion_type.emit()
+	if check_for_promotion:
+		if not NetworkHandler.is_in_match or NetworkHandler.multiplayer.is_server():
+			if piece.type == Globals.TYPE.PAWN:
+				
+				if piece.team_is_white:
+					if move.final_position.y == 0:
+						if NetworkHandler.multiplayer.is_server():
+							NetworkHandler.promotion(NetworkHandler.current_match_id, piece.team_is_white, move.final_position)
+						else:
+							piece.get_promotion_type.emit(move.final_position)
+					
+				else:
+					if move.final_position.y == board_length - 1:
+						if NetworkHandler.multiplayer.is_server():
+							NetworkHandler.promotion(NetworkHandler.current_match_id, piece.team_is_white, move.final_position)
+						else:
+							piece.get_promotion_type.emit(move.final_position)
+	
 	
 	piece.total_move_count += 1
 	
@@ -113,6 +120,8 @@ func get_availabe_moves_at_position(position: Vector2i) -> Array[Move]:
 	if piece == null:
 		return []
 	
+	piece = piece as Piece
+	
 	var moves: Array[Move] = piece.get_all_available_moves(self, position)
 	return moves
 
@@ -122,8 +131,8 @@ func is_piece_at_position_being_attacked(position: Vector2i) -> bool:
 	var piece_at_position: Piece = get_contents_at_position(position)
 	
 	# finding every other piece
-	for x: int in Globals.board_length:
-		for y: int in Globals.board_length:
+	for x: int in board_length:
+		for y: int in board_length:
 			
 			# is a piece and not ourselves
 			var pos: Vector2i = Vector2i(x,y)
@@ -134,6 +143,8 @@ func is_piece_at_position_being_attacked(position: Vector2i) -> bool:
 			# is an enemy
 			if piece.team_is_white == piece_at_position.team_is_white:
 				continue
+			
+			piece = piece as Piece
 			
 			var moves_of_piece: Array[Move] = piece.get_all_available_moves(self, pos, false)
 			
@@ -147,7 +158,7 @@ func get_board_after_move(move: Move) -> Board:
 	
 	var hypothetical_board: Board = self.duplicate()
 	
-	hypothetical_board.complete_move(move)
+	hypothetical_board.complete_move(move, false)
 	
 	return hypothetical_board
 
@@ -155,8 +166,8 @@ func would_king_be_in_check_after_move(move: Move, team_is_white: bool) -> bool:
 	var hypothetical_board: Board = get_board_after_move(move)
 	
 	# finding their king
-	for x: int in range(Globals.board_length):
-		for y: int in range(Globals.board_length):
+	for x: int in range(board_length):
+		for y: int in range(board_length):
 			
 			var position: Vector2i = Vector2i(x,y)
 			var contents = hypothetical_board.get_contents_at_position(position)
@@ -173,3 +184,22 @@ func would_king_be_in_check_after_move(move: Move, team_is_white: bool) -> bool:
 					var king_under_attack: bool = hypothetical_board.is_piece_at_position_being_attacked(position)
 					return king_under_attack
 	return false
+
+func is_move_valid(move: Move, team_is_white: bool) -> bool:
+	
+	var contents = get_contents_at_position(move.inital_position)
+	if contents != null:
+		contents = contents as Piece
+		
+		if contents.team_is_white != team_is_white:
+			return false
+		
+		var moves: Array[Move] = contents.get_all_available_moves(self, move.inital_position)
+		
+		for real_move: Move in moves:
+			if real_move.equals(move):
+				return true
+		return false
+		
+	else:
+		return false

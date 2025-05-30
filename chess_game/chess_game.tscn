@@ -1,13 +1,6 @@
-[gd_scene load_steps=3 format=3 uid="uid://5l87dv8p55mp"]
+[gd_scene load_steps=2 format=3 uid="uid://5l87dv8p55mp"]
 
 [ext_resource type="Script" uid="uid://b7y4ckk7ek2ln" path="res://chess_game/chess_game.gd" id="1_wgevo"]
-[ext_resource type="PackedScene" uid="uid://bao4x6cxcnsv7" path="res://board/board_2d/board_2d.tscn" id="3_tydxo"]
 
 [node name="ChessGame" type="Node"]
 script = ExtResource("1_wgevo")
-
-[node name="Board2D" parent="." instance=ExtResource("3_tydxo")]
-position = Vector2(574, 307)
-scale = Vector2(1.2, 1.2)
-
-[connection signal="input_move" from="Board2D" to="." method="on_input_move"]
