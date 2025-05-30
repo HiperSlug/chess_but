@@ -1,7 +1,11 @@
-[gd_scene load_steps=3 format=3 uid="uid://cnvsdf7enjfhc"]
+[gd_scene load_steps=7 format=3 uid="uid://cnvsdf7enjfhc"]
 
-[ext_resource type="Script" uid="uid://pn3rmj3jp3ma" path="res://gui/game_gui.gd" id="1_6hs8q"]
 [ext_resource type="Script" uid="uid://ddw86tf5n0a3p" path="res://gui/chat.gd" id="2_jhgb0"]
+[ext_resource type="Script" uid="uid://hiptph3k7tfk" path="res://gui/rotate_board.gd" id="4_7860r"]
+[ext_resource type="Texture2D" uid="uid://c6rpvjjhrss47" path="res://kenney_ui-pack/PNG/Red/Double/icon_cross.png" id="5_7860r"]
+[ext_resource type="Texture2D" uid="uid://uwf805go64vj" path="res://kenney_ui-pack/Vector/Extra/icon_repeat_light.svg" id="5_fiulw"]
+[ext_resource type="Texture2D" uid="uid://d1ouuxws2ewtx" path="res://kenney_ui-pack/Vector/Extra/icon_repeat_dark.svg" id="6_bixep"]
+[ext_resource type="Script" uid="uid://b16xpivydka0k" path="res://gui/forfeit.gd" id="6_fiulw"]
 
 [node name="GameGUI" type="Control"]
 layout_mode = 3
@@ -10,7 +14,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-script = ExtResource("1_6hs8q")
+mouse_filter = 2
 
 [node name="Chat" type="ColorRect" parent="."]
 layout_mode = 0
@@ -50,5 +54,46 @@ layout_mode = 2
 placeholder_text = "chat"
 keep_editing_on_text_submit = true
 
+[node name="RotateBoard" type="TextureRect" parent="."]
+layout_mode = 0
+offset_left = 348.0
+offset_top = 4.0
+offset_right = 388.0
+offset_bottom = 44.0
+script = ExtResource("4_7860r")
+white_texture = ExtResource("5_fiulw")
+black_texture = ExtResource("6_bixep")
+
+[node name="Button" type="Button" parent="RotateBoard"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+tooltip_text = "Rotate board."
+flat = true
+
+[node name="Forfeit" type="TextureRect" parent="."]
+layout_mode = 0
+offset_left = 191.0
+offset_top = 3.0
+offset_right = 231.0
+offset_bottom = 43.0
+tooltip_text = "Forfeit."
+texture = ExtResource("5_7860r")
+script = ExtResource("6_fiulw")
+
+[node name="Button" type="Button" parent="Forfeit"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+flat = true
+
 [connection signal="gui_input" from="Chat/VBoxContainer/Control" to="." method="_on_control_gui_input"]
 [connection signal="text_submitted" from="Chat/VBoxContainer/LineEdit" to="." method="_on_line_edit_text_submitted"]
+[connection signal="pressed" from="RotateBoard/Button" to="RotateBoard" method="_on_button_pressed"]
+[connection signal="pressed" from="Forfeit/Button" to="Forfeit" method="_on_button_pressed"]

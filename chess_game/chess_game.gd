@@ -24,7 +24,8 @@ func create_board_2d() -> void:
 	new_turn.connect(board_2d.set_turn)
 	board_2d.initalize_board(board)
 	if NetworkHandler.is_in_match:
-		board_2d.set_team(NetworkHandler.team_is_white)
+		board_2d.team_is_white = NetworkHandler.team_is_white
+		board_2d.rotate_board(NetworkHandler.team_is_white)
 	
 	add_child(board_2d)
 
@@ -41,13 +42,16 @@ func on_input_move(move: Move) -> void:
 		turn_is_white = not turn_is_white
 		new_turn.emit(turn_is_white) # connect to board2d
 
-func is_move_valid(move: Move, team_is_white: bool) -> bool:
+func is_move_valid(move: Move, team_is_white: bool, match_id: int) -> bool:
 	var is_valid: bool = board.is_move_valid(move, team_is_white)
 	if is_valid:
 		save_board(move)
-		board.complete_move(move)
+		board.complete_move(move, match_id)
 		turn_is_white = not turn_is_white
 		new_turn.emit(turn_is_white)
+		
+		if board.check_for_loss(not team_is_white):
+			NetworkHandler.end_match(match_id, not team_is_white)
 	
 	return is_valid
 

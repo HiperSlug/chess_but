@@ -143,7 +143,7 @@ func input(player_id: int, match_id: int, move_dict: Dictionary) -> void:
 	
 	var player_team_is_white: bool = (current_match["player_white_id"] == player_id)
 	
-	var valid_move: bool = current_match["game"].is_move_valid(move, player_team_is_white)
+	var valid_move: bool = current_match["game"].is_move_valid(move, player_team_is_white, match_id)
 	if valid_move:
 		
 		var player_white_id: int = current_match["player_white_id"]
@@ -227,3 +227,37 @@ signal on_network_chat_received(chat: String)
 @rpc("authority", "reliable")
 func receive_chat_from_server(chat: String, _display_name: String) -> void:
 	on_network_chat_received.emit(chat, _display_name)
+
+# upon win condition or forfeit end the match
+func end_match(match_id: int, winner_team_is_white: bool, draw: bool = false) -> void:
+	var current_match = matches[match_id]
+	
+	var player_white_id: int = current_match["player_white_id"]
+	var player_black_id: int = current_match["player_black_id"]
+	
+	tell_client_match_end.rpc_id(player_white_id, winner_team_is_white, draw)
+	tell_client_match_end.rpc_id(player_black_id, winner_team_is_white, draw)
+	
+	current_match["game"].queue_free()
+	matches.erase(match_id)
+
+# communication from server to client informing them of the end of the match
+@rpc("authority", "reliable")
+func tell_client_match_end(winner_team_is_white: bool, draw: bool = false) -> void:
+	if not draw:
+		if winner_team_is_white == team_is_white:
+			print("{0}: win".format([multiplayer.get_unique_id()]))
+		else:
+			print("{0}: loss".format([multiplayer.get_unique_id()]))
+	else:
+		print("{0}: draw".format([multiplayer.get_unique_id()]))
+	is_in_match = false
+	get_tree().change_scene_to_file("res://main_menu/main_menu.tscn")
+
+@rpc("any_peer","reliable")
+func forfeit(match_id: int, player_id: int) -> void:
+	var player_is_white = (matches[match_id]["player_white_id"] == player_id)
+	if player_is_white:
+		end_match(match_id, false)
+	else:
+		end_match(match_id, true)

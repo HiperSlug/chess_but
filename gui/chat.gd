@@ -4,7 +4,8 @@ extends ColorRect
 func _ready() -> void:
 	if NetworkHandler.is_in_match:
 		show()
-	
+	else:
+		hide()
 	NetworkHandler.on_network_chat_received.connect(on_chat_received)
 
 func on_chat_received(chat: String, display_name: String) -> void:

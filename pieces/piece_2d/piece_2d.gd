@@ -37,13 +37,22 @@ func set_piece(_piece) -> void:
 	piece.type_changed.connect(on_piece_type_changed)
 	piece.get_promotion_type.connect(on_piece_get_promotion_type)
 
+
 func on_board_piece_position_changed(_piece: Piece, new_position: Vector2i) -> void:
+	
+	
 	if piece == _piece:
-		position.x = Tile.tile_size * (new_position.x - 3.5)
-		position.y = Tile.tile_size * (new_position.y - 3.5)
+		var tween: Tween = get_tree().create_tween()
+		tween.set_parallel(true)
+		
+		z_index += 1
+		tween.tween_property(self, "position:x", Tile.tile_size * (new_position.x - 3.5), Globals.move_time)
+		tween.tween_property(self, "position:y", Tile.tile_size * (new_position.y - 3.5), Globals.move_time)
+		z_index -= 1
 
 func on_board_piece_removed(_piece: Piece) -> void:
 	if piece == _piece:
+		await get_tree().create_timer(Globals.move_time).timeout
 		queue_free()
 
 

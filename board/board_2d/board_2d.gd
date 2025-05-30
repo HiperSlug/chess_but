@@ -12,7 +12,9 @@ var team_is_white: bool = true
 func set_turn(_turn_is_white: bool) -> void:
 	turn_is_white = _turn_is_white
 	if not NetworkHandler.is_in_match:
-		set_team(turn_is_white)
+		team_is_white = turn_is_white
+		await get_tree().create_timer(Globals.move_time * 2).timeout
+		rotate_board(team_is_white)
 
 func set_tile_effect(tile_position: Vector2i, effect: Tile.TILE_EFFECT) -> void:
 	tile_array[tile_position.x][tile_position.y].set_tile_effect(effect)
@@ -32,7 +34,8 @@ func initalize_board(_board: Board) -> void: # called by ChessGame
 	$CanvasLayer.add_child(game_gui)
 
 
-
+func _ready() -> void:
+	Globals.on_input_tells_board_rotate.connect(rotate_board)
 
 var tile_scene: PackedScene = preload("res://board/board_2d/tile.tscn")
 var tile_array: Array[Array]
@@ -87,8 +90,8 @@ func initalize_board_peices() -> void:
 			
 			$Pieces.add_child(piece_2d)
 
-func set_team(_team_is_white: bool) -> void:
-	team_is_white = _team_is_white
+func rotate_board(_team_is_white: bool) -> void:
+	Globals.on_board_rotated.emit(_team_is_white)
 	if _team_is_white:
 		rotation = 0
 		for child: Node2D in $Pieces.get_children():

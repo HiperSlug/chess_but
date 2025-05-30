@@ -47,7 +47,7 @@ func get_team_at_position(position: Vector2i):
 	
 	return piece.team_is_white
 
-func complete_move(move: Move, check_for_promotion: bool = true) -> void:
+func complete_move(move: Move, check_for_promotion: bool = true, match_id: int = 0) -> void:
 	
 	var piece: Piece = get_contents_at_position(move.inital_position)
 	
@@ -74,14 +74,14 @@ func complete_move(move: Move, check_for_promotion: bool = true) -> void:
 				if piece.team_is_white:
 					if move.final_position.y == 0:
 						if NetworkHandler.multiplayer.is_server():
-							NetworkHandler.promotion(NetworkHandler.current_match_id, piece.team_is_white, move.final_position)
+							NetworkHandler.promotion(match_id, piece.team_is_white, move.final_position)
 						else:
 							piece.get_promotion_type.emit(move.final_position)
 					
 				else:
 					if move.final_position.y == board_length - 1:
 						if NetworkHandler.multiplayer.is_server():
-							NetworkHandler.promotion(NetworkHandler.current_match_id, piece.team_is_white, move.final_position)
+							NetworkHandler.promotion(match_id, piece.team_is_white, move.final_position)
 						else:
 							piece.get_promotion_type.emit(move.final_position)
 	

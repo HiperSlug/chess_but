@@ -2,6 +2,12 @@ extends Node
 
 @warning_ignore("unused_signal") # called by popups upon entering and exiting
 signal set_mouse_pickable_enabled(enabled: bool)
+@warning_ignore("unused_signal") # called by board2d to communicate with gui
+signal on_board_rotated(team_is_white: bool)
+@warning_ignore("unused_signal")
+signal on_input_tells_board_rotate(team_is_white: bool)
+
+var move_time: float = .2
 
 enum TYPE {
 	PAWN,
