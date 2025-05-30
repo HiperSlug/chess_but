@@ -2,6 +2,74 @@ extends Node
 class_name ChessGame
 
 
+
+func connect_to_history_signals() -> void:
+	Globals.on_history_back_pressed.connect(hisotry_back)
+	Globals.on_history_current_pressed.connect(history_current)
+	Globals.on_history_first_pressed.connect(history_first)
+	Globals.on_history_forward_pressed.connect(history_forward)
+
+
+var in_history_mode: bool = false
+var history_rotation_team_is_white: bool = true
+var history_position: int = 0
+
+func hisotry_back() -> void:
+	enter_history_mode(board_history.size())
+	history_position -= 1
+	if history_position < 0:
+		return
+	else:
+		Globals.on_hisotry_position_set.emit(history_position)
+		board_2d_node.clear_pieces_from_board()
+		board_2d_node.board = board_history[history_position]
+		board_2d_node.initalize_board_peices()
+
+func history_forward() -> void:
+	history_position += 1
+	if history_position >= board_history.size():
+		exit_history_mode()
+	else:
+		Globals.on_hisotry_position_set.emit(history_position)
+		board_2d_node.clear_pieces_from_board()
+		board_2d_node.board = board_history[history_position]
+		board_2d_node.initalize_board_peices()
+
+func history_current() -> void:
+	history_position = board_history.size()
+	exit_history_mode()
+
+func history_first() -> void:
+	enter_history_mode(0)
+	
+	history_position = 0
+	Globals.on_hisotry_position_set.emit(history_position)
+	board_2d_node.clear_pieces_from_board()
+	board_2d_node.board = board_history[history_position]
+	board_2d_node.initalize_board_peices()
+
+func enter_history_mode(_history_pos) -> void:
+	if in_history_mode:
+		return
+	
+	Globals.on_hisotry_mode_set.emit(true)
+	board_2d_node.reset_all_tile_effects()
+	board_2d_node.deselect_all()
+	board_2d_node.can_select_any_thing = false
+	in_history_mode = true
+	history_position = _history_pos
+
+func exit_history_mode() -> void:
+	in_history_mode = false
+	Globals.on_hisotry_position_set.emit(history_position)
+	Globals.on_hisotry_mode_set.emit(false)
+	board_2d_node.clear_pieces_from_board()
+	board_2d_node.board = board
+	board_2d_node.initalize_board_peices()
+	board_2d_node.can_select_any_thing = true
+
+
+
 signal new_turn(turn_is_white: bool)
 var turn_is_white: bool = true
 var board: Board = Board.new(8)
@@ -15,11 +83,17 @@ func _ready() -> void:
 	
 	if not NetworkHandler.multiplayer.is_server():
 		create_board_2d()
-		
+	
+	
+	connect_to_history_signals()
 
+var board_2d_node: Board2D
 var board_2d_scene: PackedScene = preload("res://board/board_2d/board_2d.tscn")
 func create_board_2d() -> void:
 	var board_2d: Board2D = board_2d_scene.instantiate()
+	
+	board_2d_node = board_2d
+	
 	board_2d.input_move.connect(on_input_move)
 	new_turn.connect(board_2d.set_turn)
 	board_2d.initalize_board(board)
@@ -32,15 +106,29 @@ func create_board_2d() -> void:
 var board_history: Array[Board] = []
 var move_history: Array[Move] = []
 
+var first_move: bool = true
 func on_input_move(move: Move) -> void:
 	if NetworkHandler.is_in_match:
 		var move_dict: Dictionary = move.serialize()
-		NetworkHandler.input.rpc_id(1, NetworkHandler.multiplayer.get_unique_id(), NetworkHandler.current_match_id, move_dict)
+		if not in_history_mode:
+			NetworkHandler.input.rpc_id(1, NetworkHandler.multiplayer.get_unique_id(), NetworkHandler.current_match_id, move_dict)
 	else:
-		save_board(move)
-		board.complete_move(move)
-		turn_is_white = not turn_is_white
-		new_turn.emit(turn_is_white) # connect to board2d
+		if not in_history_mode:
+			save_board(move)
+			board.complete_move(move)
+			if first_move:
+				Globals.on_first_move.emit()
+				first_move = false
+			
+			if board.check_for_loss(not turn_is_white):
+				Globals.on_game_end.emit(true)
+			elif board.check_for_stalemate(not turn_is_white):
+				Globals.on_game_end.emit(true, true)
+			else:
+				turn_is_white = not turn_is_white
+				new_turn.emit(turn_is_white) # connect to board2d
+			
+			
 
 func is_move_valid(move: Move, team_is_white: bool, match_id: int) -> bool:
 	var is_valid: bool = board.is_move_valid(move, team_is_white)
@@ -56,6 +144,9 @@ func is_move_valid(move: Move, team_is_white: bool, match_id: int) -> bool:
 	return is_valid
 
 func on_network_handler_received_valid_input(move: Move) -> void:
+	if first_move:
+		Globals.on_first_move.emit()
+		first_move = false
 	save_board(move)
 	board.complete_move(move)
 	turn_is_white = not turn_is_white

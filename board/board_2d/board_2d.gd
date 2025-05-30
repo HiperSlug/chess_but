@@ -7,7 +7,11 @@ var turn_is_white: bool = true
 
 var team_is_white: bool = true
 
+var can_select_any_thing: bool = true
 
+func clear_pieces_from_board() -> void:
+	for piece: Piece2D in $Pieces.get_children():
+		piece.queue_free()
 
 func set_turn(_turn_is_white: bool) -> void:
 	turn_is_white = _turn_is_white
@@ -36,6 +40,8 @@ func initalize_board(_board: Board) -> void: # called by ChessGame
 
 func _ready() -> void:
 	Globals.on_input_tells_board_rotate.connect(rotate_board)
+	Globals.on_game_end.connect(game_end)
+
 
 var tile_scene: PackedScene = preload("res://board/board_2d/tile.tscn")
 var tile_array: Array[Array]
@@ -84,6 +90,9 @@ func initalize_board_peices() -> void:
 			piece_2d.position.x = Tile.tile_size * (x - 3.5)
 			piece_2d.position.y = Tile.tile_size * (y - 3.5)
 			
+			if  is_equal_approx(rotation, PI):
+				piece_2d.rotation = PI
+			
 			board.piece_position_changed.connect(piece_2d.on_board_piece_position_changed)
 			board.piece_removed.connect(piece_2d.on_board_piece_removed)
 			
@@ -110,6 +119,8 @@ var can_deselect: bool = false
 func on_tile_pressed(tile_position: Vector2i) -> void: 
 	reset_all_tile_effects()
 	
+	if not can_select_any_thing:
+		return
 	
 	# if this tile is already selected next tile released will unselect piece
 	if tile_position == selected_position:
@@ -185,10 +196,22 @@ func on_tile_pressed(tile_position: Vector2i) -> void:
 			# store moves
 			displayed_moves = availabe_moves
 	
+var game_end_popup_scene: PackedScene = preload("res://popups/game_end/game_end_popup.tscn")
 	
+func game_end(won: bool, stale_mate: bool) -> void:
+	can_select_any_thing = false
+	
+	var game_end_popup: Node = game_end_popup_scene.instantiate()
+	game_end_popup.set_message(won, stale_mate)
+	$CanvasLayer.add_child(game_end_popup)
+	await get_tree().create_timer(1).timeout
+	
+	game_end_popup.queue_free()
 
 func on_tile_released(tile_position: Vector2i) -> void:
 	
+	if not can_select_any_thing:
+		return
 	
 	if tile_position == selected_position:
 		if can_deselect:

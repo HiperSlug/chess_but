@@ -1,6 +1,8 @@
 extends Node
 
 
+signal set_is_in_match(is_in_match: bool)
+
 func _ready() -> void:
 	var arguments: Dictionary = {}
 	for argument in OS.get_cmdline_args():
@@ -32,15 +34,11 @@ func create_server(port: int) -> void:
 	
 	peer.peer_connected.connect(on_server_peer_connected)
 	peer.peer_disconnected.connect(on_server_peer_disconnected)
-	
-	print("hosting")
 
 func create_client(web_socket_url: String) -> void:
 	var peer: WebSocketMultiplayerPeer = WebSocketMultiplayerPeer.new()
 	peer.create_client(web_socket_url)
 	multiplayer.multiplayer_peer = peer
-	
-	print("connecting")
 
 func disconnect_peer() -> void:
 	print("{0}: disconnecting".format([multiplayer.multiplayer_peer.get_unique_id()]))
@@ -127,6 +125,7 @@ func start_match(match_id: int, _team_is_white: bool) -> void:
 	print("{0}: started match {1}".format([multiplayer.multiplayer_peer.get_unique_id(), match_id]))
 	
 	is_in_match = true
+	set_is_in_match.emit(true)
 	current_match_id = match_id
 	team_is_white = _team_is_white
 	
@@ -215,11 +214,12 @@ func send_promotion(chosen_type: int, position: Vector2i) -> void:
 func send_chat_to_server(match_id: int, chat: String, _display_name) -> void:
 	var current_match = matches[match_id]
 	
-	var player_white_id: int = current_match["player_white_id"]
-	var player_black_id: int = current_match["player_black_id"]
-	
-	receive_chat_from_server.rpc_id(player_white_id, chat, _display_name)
-	receive_chat_from_server.rpc_id(player_black_id, chat, _display_name)
+	if current_match.has("player_white_id"):
+		var player_white_id: int = current_match["player_white_id"]
+		receive_chat_from_server.rpc_id(player_white_id, chat, _display_name)
+	if current_match.has("player_black_id"):
+		var player_black_id: int = current_match["player_black_id"]
+		receive_chat_from_server.rpc_id(player_black_id, chat, _display_name)
 
 signal on_network_chat_received(chat: String)
 # sends chat message from server to client
@@ -239,7 +239,7 @@ func end_match(match_id: int, winner_team_is_white: bool, draw: bool = false) ->
 	tell_client_match_end.rpc_id(player_black_id, winner_team_is_white, draw)
 	
 	current_match["game"].queue_free()
-	matches.erase(match_id)
+	current_match.erase("game")
 
 # communication from server to client informing them of the end of the match
 @rpc("authority", "reliable")
@@ -251,8 +251,11 @@ func tell_client_match_end(winner_team_is_white: bool, draw: bool = false) -> vo
 			print("{0}: loss".format([multiplayer.get_unique_id()]))
 	else:
 		print("{0}: draw".format([multiplayer.get_unique_id()]))
+	
 	is_in_match = false
-	get_tree().change_scene_to_file("res://main_menu/main_menu.tscn")
+	set_is_in_match.emit(false)
+	
+	Globals.on_game_end.emit(winner_team_is_white == team_is_white)
 
 @rpc("any_peer","reliable")
 func forfeit(match_id: int, player_id: int) -> void:
@@ -261,3 +264,28 @@ func forfeit(match_id: int, player_id: int) -> void:
 		end_match(match_id, false)
 	else:
 		end_match(match_id, true)
+
+@rpc("any_peer","reliable")
+func client_tell_server_leave_match(match_id: int, player_id: int) -> void:
+	if not matches.has(match_id):
+		return
+	
+	var current_match = matches[match_id]
+	
+	
+	if current_match.has("player_white_id") and current_match["player_white_id"] == player_id:
+		current_match.erase("player_white_id")
+		if not current_match.has("player_black_id"):
+			matches.erase(match_id)
+		else:
+			receive_chat_from_server.rpc_id(current_match["player_black_id"], "Opponent left.", "SERVER")
+	
+	elif current_match.has("player_black_id") and current_match["player_black_id"] == player_id:
+		current_match.erase("player_black_id")
+		if not current_match.has("player_white_id"):
+			matches.erase(match_id)
+		else:
+			receive_chat_from_server.rpc_id(current_match["player_white_id"], "Opponent left.", "SERVER")
+	
+	else:
+		matches.erase(match_id)

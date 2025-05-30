@@ -18,6 +18,8 @@ func on_chat_received(chat: String, display_name: String) -> void:
 
 
 func _on_line_edit_text_submitted(new_text: String) -> void:
+	if new_text == "":
+		return
 	NetworkHandler.send_chat_to_server.rpc_id(1, NetworkHandler.current_match_id, new_text, NetworkHandler.display_name)
 	$VBoxContainer/LineEdit.text = ""
 
@@ -28,7 +30,7 @@ func _on_control_gui_input(event: InputEvent) -> void:
 	elif event.is_action_pressed("scroll_down"):
 		scroll_chat(-1)
 
-var chat_scroll_pixels: int = 10
+var chat_scroll_pixels: int = 20
 @onready var chat_container: VBoxContainer = $VBoxContainer/Control/VBoxContainer
 func scroll_chat(direction_y: int) -> void:
 	

@@ -2,10 +2,29 @@ extends Node
 
 @warning_ignore("unused_signal") # called by popups upon entering and exiting
 signal set_mouse_pickable_enabled(enabled: bool)
+
 @warning_ignore("unused_signal") # called by board2d to communicate with gui
 signal on_board_rotated(team_is_white: bool)
 @warning_ignore("unused_signal")
 signal on_input_tells_board_rotate(team_is_white: bool)
+
+@warning_ignore("unused_signal")
+signal on_hisotry_mode_set(is_in_history_mode: bool)
+@warning_ignore("unused_signal")
+signal on_hisotry_position_set(history_position: int)
+@warning_ignore("unused_signal")
+signal on_first_move()
+@warning_ignore("unused_signal")
+signal on_history_back_pressed()
+@warning_ignore("unused_signal")
+signal on_history_forward_pressed()
+@warning_ignore("unused_signal")
+signal on_history_current_pressed()
+@warning_ignore("unused_signal")
+signal on_history_first_pressed()
+
+@warning_ignore("unused_signal")
+signal on_game_end(won: bool, stale_mate: bool)
 
 var move_time: float = .2
 

@@ -49,6 +49,7 @@ func get_team_at_position(position: Vector2i):
 
 func complete_move(move: Move, check_for_promotion: bool = true, match_id: int = 0) -> void:
 	
+	
 	var piece: Piece = get_contents_at_position(move.inital_position)
 	
 	# kill
@@ -105,6 +106,18 @@ func check_for_loss(team_is_white: bool) -> bool:
 					return false
 	return true
 
+func check_for_stalemate(team_is_white: bool) -> bool:
+	for y: int in range(board_length):
+		for x: int in range(board_length):
+			var position: Vector2i = Vector2i(x,y)
+			
+			var contents = get_contents_at_position(position)
+			if contents != null and contents.team_is_white == team_is_white:
+				contents = contents as Piece
+				
+				if contents.get_all_available_moves(self, position, false).size() > 0:
+					return false
+	return true
 
 
 func get_contents_at_position(position: Vector2i):
