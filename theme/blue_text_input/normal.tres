@@ -1,6 +1,6 @@
 [gd_resource type="StyleBoxTexture" load_steps=2 format=3 uid="uid://cl53x0bowjon7"]
 
-[ext_resource type="Texture2D" uid="uid://b8gs77nf0diww" path="res://kenney_ui-pack/PNG/Blue/Double/button_rectangle_depth_border.png" id="1_42467"]
+[ext_resource type="Texture2D" uid="uid://craryuxutp72s" path="res://theme/blue_text_input/button_rectangle_depth_border.png" id="1_42467"]
 
 [resource]
 content_margin_left = 24.0
