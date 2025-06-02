@@ -3,13 +3,10 @@ extends Node
 
 func _ready() -> void:
 	
-	if OS.is_debug_build():
-		determine_if_server_from_arguments()
+	if OS.has_feature("server"):
+		create_server()
 	else:
-		if OS.has_feature("server"):
-			create_server()
-		else:
-			create_client()
+		create_client()
 
 ## If launch arguments has argument "--server=true" then this instance of the game will host itself as a server, otherwise it will host itself as a client.
 ## Called by _ready() function.
@@ -53,6 +50,8 @@ var URL: String = "ws://localhost:{0}".format([PORT]) # change this to server ho
 ## Connects the server to connected and disconnected signals.
 ## Port 4040.
 func create_server() -> void:
+	
+	print("hosting")
 	
 	var peer: WebSocketMultiplayerPeer = WebSocketMultiplayerPeer.new()
 	peer.create_server(PORT)
@@ -272,8 +271,6 @@ var team_is_white: bool = true
 ## Sets inportant match information, match_id and team, then runs the chess_game scene.
 @rpc("authority", "reliable")
 func server_to_client_start_match(match_id: int, team_is_white_: bool) -> void:
-	
-	print("{0}: started match {1}".format([multiplayer.multiplayer_peer.get_unique_id(), match_id]))
 	
 	# initalize variables
 	is_in_match = true

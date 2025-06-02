@@ -13,6 +13,7 @@ config_version=5
 config/name="Chess But"
 run/main_scene="uid://bt1a2oqcf8btm"
 config/features=PackedStringArray("4.4", "GL Compatibility")
+run/flush_stdout_on_print=true
 config/icon="res://icon.svg"
 
 [autoload]
