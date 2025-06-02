@@ -20,7 +20,6 @@ WORKDIR /app
 
 EXPOSE 443
 EXPOSE 80
-EXPOSE 1000
 
 RUN chmod +x server.x86_64
 

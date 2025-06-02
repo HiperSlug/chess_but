@@ -12,5 +12,4 @@ def run():
     server.serve_forever()
 
 
-if __name__ == "__main__":
-    run()
+run()
