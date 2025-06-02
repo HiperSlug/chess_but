@@ -44,9 +44,8 @@ signal on_client_disconnected_from_server()
 var is_client_connected_to_server: bool = false
 
 var PORT: int = 1111
-var HTTP_PORT: int = 8080
 var bind_address: String = "0.0.0.0"
-var URL: String = "wss://replit.com/@raphaellarsen/chessbut"
+var URL: String = "ws://chessbut--raphaellarsen.replit.app:{0}".format([PORT])
 
 var http_server: TCPServer
 
@@ -72,9 +71,9 @@ func create_server() -> void:
 ## Creates an HTTP server for health checks
 func create_http_server() -> void:
 	http_server = TCPServer.new()
-	var error = http_server.listen(HTTP_PORT, bind_address)
+	var error = http_server.listen(PORT, bind_address)
 	if error == OK:
-		print("HTTP health check server started on port ", HTTP_PORT)
+		print("HTTP health check server started on port ", PORT)
 	else:
 		print("Failed to start HTTP server: ", error)
 
@@ -87,10 +86,6 @@ func _process(_delta: float) -> void:
 
 ## Handle incoming HTTP requests
 func handle_http_request(client: StreamPeerTCP) -> void:
-	# Read the request
-	var request = ""
-	while client.get_available_bytes() > 0:
-		request += client.get_string(client.get_available_bytes())
 	
 	# Simple health check response
 	var response = "HTTP/1.1 200 OK\r\n"
