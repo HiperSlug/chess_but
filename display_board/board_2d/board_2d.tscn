@@ -1,0 +1,39 @@
+[gd_scene load_steps=4 format=3 uid="uid://bao4x6cxcnsv7"]
+
+[ext_resource type="Script" uid="uid://dfpivjp7h2u0s" path="res://display_board/board_2d/board_2d.gd" id="1_q7os4"]
+[ext_resource type="PackedScene" uid="uid://dbbkbp7n0w66d" path="res://background/animated_background.tscn" id="2_kgh6q"]
+[ext_resource type="PackedScene" uid="uid://cnvsdf7enjfhc" path="res://display_board/gui/game_gui.tscn" id="2_pwowi"]
+
+[node name="Board2D" type="Node2D"]
+script = ExtResource("1_q7os4")
+
+[node name="AnimatedBackground" parent="." instance=ExtResource("2_kgh6q")]
+
+[node name="CanvasLayer2" type="CanvasLayer" parent="."]
+follow_viewport_enabled = true
+
+[node name="Camera2D" type="Camera2D" parent="CanvasLayer2"]
+position = Vector2(-250, 0)
+
+[node name="BoardPosition" type="Node2D" parent="CanvasLayer2"]
+
+[node name="Polygon2D" type="Polygon2D" parent="CanvasLayer2/BoardPosition"]
+z_index = -1
+position = Vector2(-272, -272)
+color = Color(0.878431, 0.878431, 0.878431, 1)
+polygon = PackedVector2Array(0, 0, 544, 0, 544, 544, 0, 544)
+
+[node name="Polygon2D2" type="Polygon2D" parent="CanvasLayer2/BoardPosition"]
+z_index = -1
+position = Vector2(-260, -260)
+color = Color(0.0941176, 0.392157, 0.517647, 1)
+polygon = PackedVector2Array(0, 0, 520, 0, 520, 520, 0, 520)
+
+[node name="Tiles" type="Node2D" parent="CanvasLayer2/BoardPosition"]
+
+[node name="Pieces" type="Node2D" parent="CanvasLayer2/BoardPosition"]
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="GameGUI" parent="CanvasLayer" node_paths=PackedStringArray("board_2d") instance=ExtResource("2_pwowi")]
+board_2d = NodePath("../..")

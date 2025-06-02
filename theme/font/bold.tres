@@ -1,0 +1,7 @@
+[gd_resource type="FontVariation" load_steps=2 format=3 uid="uid://cga3gofjytuns"]
+
+[ext_resource type="FontFile" uid="uid://bxo1eomfbp4x7" path="res://theme/font/Kenney Future.ttf" id="1_lpaiw"]
+
+[resource]
+base_font = ExtResource("1_lpaiw")
+variation_embolden = 1.0

@@ -1,0 +1,87 @@
+[gd_resource type="Theme" load_steps=18 format=3 uid="uid://bxjk67b244r41"]
+
+[ext_resource type="FontFile" uid="uid://bxo1eomfbp4x7" path="res://theme/font/Kenney Future.ttf" id="1_4tj8r"]
+[ext_resource type="StyleBox" uid="uid://cl53x0bowjon7" path="res://theme/blue_text_input/normal.tres" id="2_4vke1"]
+[ext_resource type="Texture2D" uid="uid://ldm6k0yrkk46" path="res://theme/blue_square_button/button_square_flat.png" id="3_0finn"]
+[ext_resource type="FontVariation" uid="uid://cga3gofjytuns" path="res://theme/font/bold.tres" id="4_dwelr"]
+[ext_resource type="Texture2D" uid="uid://cl6i7kwt7sqsp" path="res://theme/panel/button_square_flat.png" id="4_o3w03"]
+[ext_resource type="Texture2D" uid="uid://b62l713yortrf" path="res://theme/panel/button_square_gloss.png" id="5_4m1i2"]
+[ext_resource type="StyleBox" uid="uid://d1kv3o8gbqink" path="res://theme/blue_square_button/disabled.tres" id="5_4vke1"]
+[ext_resource type="FontVariation" uid="uid://8o6lm61huehh" path="res://theme/font/bold_italics.tres" id="5_eev3d"]
+[ext_resource type="FontVariation" uid="uid://ddlqbvtixgndr" path="res://theme/font/italics.tres" id="6_4vke1"]
+[ext_resource type="StyleBox" uid="uid://daqneovtw2qg7" path="res://theme/blue_square_button/hover.tres" id="6_obgof"]
+[ext_resource type="StyleBox" uid="uid://xfjawj3aodne" path="res://theme/blue_square_button/normal.tres" id="7_0finn"]
+[ext_resource type="StyleBox" uid="uid://bwr0mlx0tc1e" path="res://theme/blue_square_button/pressed.tres" id="8_o3w03"]
+[ext_resource type="StyleBox" uid="uid://d4b52tyfmc00l" path="res://theme/blue_square_button/hover_pressed.tres" id="8_obgof"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_0finn"]
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_o3w03"]
+content_margin_left = 10.0
+content_margin_top = 10.0
+content_margin_right = 10.0
+content_margin_bottom = 10.0
+texture = ExtResource("3_0finn")
+region_rect = Rect2(16, 16, 96, 96)
+modulate_color = Color(0.758192, 0.758192, 0.758191, 1)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_4m1i2"]
+content_margin_left = 8.0
+content_margin_top = 8.0
+content_margin_right = 8.0
+content_margin_bottom = 8.0
+texture = ExtResource("4_o3w03")
+texture_margin_left = 16.0
+texture_margin_top = 16.0
+texture_margin_right = 16.0
+texture_margin_bottom = 16.0
+region_rect = Rect2(0, 0, 128, 128)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_sw8gl"]
+content_margin_left = 16.0
+content_margin_top = 16.0
+content_margin_right = 16.0
+content_margin_bottom = 16.0
+texture = ExtResource("5_4m1i2")
+texture_margin_left = 16.0
+texture_margin_top = 16.0
+texture_margin_right = 16.0
+texture_margin_bottom = 16.0
+
+[resource]
+Button/font_sizes/font_size = 32
+Button/fonts/font = ExtResource("1_4tj8r")
+Label/font_sizes/font_size = 32
+Label/fonts/font = ExtResource("1_4tj8r")
+LabelOnPanel/base_type = &"Label"
+LabelOnPanel/colors/font_color = Color(0.196078, 0.196078, 0.196078, 1)
+LineEdit/colors/caret_color = Color(0.0383967, 0.0383973, 0.0383974, 1)
+LineEdit/colors/font_color = Color(0.051971, 0.051971, 0.051971, 1)
+LineEdit/colors/font_outline_color = Color(0.87451, 0.87451, 0.87451, 1)
+LineEdit/colors/font_placeholder_color = Color(0.389287, 0.389287, 0.389287, 1)
+LineEdit/font_sizes/font_size = 24
+LineEdit/fonts/font = ExtResource("1_4tj8r")
+LineEdit/styles/focus = SubResource("StyleBoxEmpty_0finn")
+LineEdit/styles/normal = ExtResource("2_4vke1")
+Panel/styles/panel = SubResource("StyleBoxTexture_o3w03")
+PanelBox/base_type = &"Panel"
+PanelBox/styles/panel = SubResource("StyleBoxTexture_4m1i2")
+PanelContainer/styles/panel = SubResource("StyleBoxTexture_sw8gl")
+RichTextLabel/fonts/bold_font = ExtResource("4_dwelr")
+RichTextLabel/fonts/bold_italics_font = ExtResource("5_eev3d")
+RichTextLabel/fonts/italics_font = ExtResource("6_4vke1")
+RichTextLabel/fonts/mono_font = ExtResource("1_4tj8r")
+RichTextLabel/fonts/normal_font = ExtResource("1_4tj8r")
+SquareButton/base_type = &"Button"
+SquareButton/colors/font_color = Color(1, 1, 1, 1)
+SquareButton/colors/font_disabled_color = Color(0.800491, 0.800491, 0.800491, 1)
+SquareButton/colors/font_hover_color = Color(1, 1, 1, 1)
+SquareButton/colors/font_hover_pressed_color = Color(1, 1, 1, 1)
+SquareButton/colors/font_pressed_color = Color(1, 1, 1, 1)
+SquareButton/font_sizes/font_size = 32
+SquareButton/fonts/font = ExtResource("1_4tj8r")
+SquareButton/styles/disabled = ExtResource("5_4vke1")
+SquareButton/styles/hover = ExtResource("6_obgof")
+SquareButton/styles/hover_pressed = ExtResource("8_obgof")
+SquareButton/styles/normal = ExtResource("7_0finn")
+SquareButton/styles/pressed = ExtResource("8_o3w03")

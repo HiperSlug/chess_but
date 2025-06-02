@@ -4,10 +4,11 @@ class_name ChessGame
 
 
 func connect_to_history_signals() -> void:
-	Globals.on_history_back_pressed.connect(hisotry_back)
-	Globals.on_history_current_pressed.connect(history_current)
-	Globals.on_history_first_pressed.connect(history_first)
-	Globals.on_history_forward_pressed.connect(history_forward)
+	#Globals.on_history_back_pressed.connect(hisotry_back)
+	#Globals.on_history_current_pressed.connect(history_current)
+	#Globals.on_history_first_pressed.connect(history_first)
+	#Globals.on_history_forward_pressed.connect(history_forward)
+	pass
 
 
 var in_history_mode: bool = false
@@ -69,121 +70,132 @@ func exit_history_mode() -> void:
 	board_2d_node.can_select_any_thing = true
 
 
+## Signal emitted upon turn_is_white changing
+signal turn_changed(new_turn: bool)
 
-signal new_turn(turn_is_white: bool)
-var turn_is_white: bool = true
-var board: Board = Board.new(8)
+## Variable tracking who's turn it is in the current chess game.
+var turn_is_white: bool = true:
+	set(value):
+		turn_is_white = value
+		turn_changed.emit(turn_is_white)
+
+## The matrix of pieces is stored in the Board object.
+## This variable is always the latest and active board.
+var board: Board = Board.new()
+
+## Stores every instance of Board after every completed move
+var board_history: Array[Board] = []
+
+## Stores every completed move
+var move_history: Array[Move] = []
+
 
 func _ready() -> void:
-	NetworkHandler.on_networking_received_valid_input.connect(on_network_handler_received_valid_input)
-	NetworkHandler.network_request_promotion_type.connect(on_network_request_promotion_type)
-	NetworkHandler.on_receive_promotion.connect(on_network_receive_promotion_order)
 	
-	set_normal_starting_board(board)
+	connect_to_network_handler_signals()
+	connect_to_history_signals()
+	
+	set_normal_starting_board()
 	
 	if not NetworkHandler.multiplayer.is_server():
+		
 		create_board_2d()
-	
-	
-	connect_to_history_signals()
 
+
+## Contains this chess_games instance of Board2D
 var board_2d_node: Board2D
-var board_2d_scene: PackedScene = preload("res://board/board_2d/board_2d.tscn")
+
+## Packed scene containing the board_2d
+var board_2d_scene: PackedScene = preload("res://display_board/board_2d/board_2d.tscn")
+
+## Instantiates a new board_2d, connects signals, and tells it to display the board.
 func create_board_2d() -> void:
 	var board_2d: Board2D = board_2d_scene.instantiate()
 	
 	board_2d_node = board_2d
 	
-	board_2d.input_move.connect(on_input_move)
-	new_turn.connect(board_2d.set_turn)
-	board_2d.initalize_board(board)
+	# connecting signals
+	board_2d.on_input_move.connect(on_input_move)
+	turn_changed.connect(board_2d.on_chess_game_turn_changed)
+	
+	# initalizing visuals
+	board_2d.board = board
+	board_2d.setup_board_pieces()
+	
+	# the rotation buttons need a reference to the chess game
+	var history_node: Node = board_2d.get_node("CanvasLayer/GameGUI").get_node("Panel/BoardControls/History")
+	history_node.chess_game = self
+	
+	# initalizing team
 	if NetworkHandler.is_in_match:
-		board_2d.team_is_white = NetworkHandler.team_is_white
+		
 		board_2d.rotate_board(NetworkHandler.team_is_white)
 	
 	add_child(board_2d)
 
-var board_history: Array[Board] = []
-var move_history: Array[Move] = []
-
-var first_move: bool = true
+## Connected to a board_2d or board_3d which handle getting input.
+## Either sends the move to the server if playing multiplayer or completes the move.
 func on_input_move(move: Move) -> void:
+	
+	# if playing multiplayer send the move to the server
 	if NetworkHandler.is_in_match:
-		var move_dict: Dictionary = move.serialize()
-		if not in_history_mode:
-			NetworkHandler.input.rpc_id(1, NetworkHandler.multiplayer.get_unique_id(), NetworkHandler.current_match_id, move_dict)
-	else:
-		if not in_history_mode:
-			save_board(move)
-			board.complete_move(move)
-			if first_move:
-				Globals.on_first_move.emit()
-				first_move = false
-			
-			if board.check_for_loss(not turn_is_white):
-				Globals.on_game_end.emit(true)
-			elif board.check_for_stalemate(not turn_is_white):
-				Globals.on_game_end.emit(true, true)
-			else:
-				turn_is_white = not turn_is_white
-				new_turn.emit(turn_is_white) # connect to board2d
-			
-			
-
-func is_move_valid(move: Move, team_is_white: bool, match_id: int) -> bool:
-	var is_valid: bool = board.is_move_valid(move, team_is_white)
-	if is_valid:
-		save_board(move)
-		board.complete_move(move, match_id)
-		turn_is_white = not turn_is_white
-		new_turn.emit(turn_is_white)
+		NetworkHandler.send_server_move(move)
 		
-		if board.check_for_loss(not team_is_white):
-			NetworkHandler.end_match(match_id, not team_is_white)
-	
-	return is_valid
+	else:
+		
+		complete_move(move)
 
-func on_network_handler_received_valid_input(move: Move) -> void:
-	if first_move:
-		Globals.on_first_move.emit()
-		first_move = false
-	save_board(move)
+## Saves the move, changes the board, checks for a win, and changes the turn.
+func complete_move(move: Move) -> void:
+	save_board_and_move(move)
+		
 	board.complete_move(move)
+	
+	var opponent_team_is_white: bool = not turn_is_white
+	
+	if not NetworkHandler.is_in_match and not NetworkHandler.multiplayer.is_server() and board.check_for_loss(opponent_team_is_white):
+		if opponent_team_is_white:
+			Globals.on_game_end.emit(Globals.RESULT.BLACK_WIN)
+		else:
+			Globals.on_game_end.emit(Globals.RESULT.WHITE_WIN)
+		
+	
 	turn_is_white = not turn_is_white
-	new_turn.emit(turn_is_white)
 
-func on_network_request_promotion_type(position: Vector2i) -> void:
-	var contents = board.get_contents_at_position(position)
-	
-	if contents == null:
-		# request board sync with server
-		pass
-	
-	contents = contents as Piece
-	contents.get_promotion_type.emit(position)
 
-func on_network_receive_promotion_order(type: Globals.TYPE, position: Vector2i) -> void:
-	var contents = board.get_contents_at_position(position)
-	
-	if contents == null:
-		# request board sync with server
-		pass
-	
-	contents = contents as Piece
-	contents.promote(type)
-
-func save_board(move: Move) -> void:
+## Stores the current board in board_history and the completed_move to move_history
+func save_board_and_move(move: Move) -> void:
 	board_history.append(board.duplicate())
 	move_history.append(move)
 
-func check_for_win(team_is_white: bool) -> bool:
-	var win: bool = board.check_for_loss(not team_is_white)
-	return win
+## Server function.
+## Gets if the move is valid from the current board and returns the result.
+func is_move_valid(move: Move, team_is_white: bool) -> bool:
+	return board.is_move_valid(move, team_is_white)
 
+func check_for_match_end(team_is_white : bool):
+	if board.check_for_loss(team_is_white):
+		if team_is_white:
+			return Globals.RESULT.BLACK_WIN
+		else:
+			return Globals.RESULT.WHITE_WIN
+	return null
+
+## Called by ready.
+## Connects to signal emitted upon receiving a move from the server.
+func connect_to_network_handler_signals() -> void:
+	NetworkHandler.on_client_complete_move.connect(on_client_complete_move)
+
+## Updates the clients board with the move.
+func on_client_complete_move(move: Move) -> void:
+	complete_move(move)
+
+## Used only by pawn move sets to determine if enpassant is possible
 func get_last_move() -> Move:
 	return move_history[-1]
 
-func set_normal_starting_board(_board: Board) -> void:
+## Initalizes the member board variable with a normal chess starting board.
+func set_normal_starting_board() -> void:
 	
 	# black pawns
 	var y_position_black_pawns: int = 1
@@ -191,38 +203,38 @@ func set_normal_starting_board(_board: Board) -> void:
 	for x: int in range(board.board_length):
 		
 		var position: Vector2i = Vector2i(x,y_position_black_pawns)
-		_board.set_contents_at_position_to(position, normal_black_pawn.duplicate())
+		board.set_contents_at_position_to(position, normal_black_pawn.duplicate())
 	
 	# white pawns
-	var y_position_white_pawns: int = _board.board_length - 2
+	var y_position_white_pawns: int = board.board_length - 2
 	var normal_white_pawn: Piece = Piece.new(Globals.TYPE.PAWN, true, [MoveSet.new(Globals.TYPE.PAWN, self, true)])
 	for x: int in range(board.board_length):
 		
 		var position: Vector2i = Vector2i(x,y_position_white_pawns)
-		_board.set_contents_at_position_to(position, normal_white_pawn.duplicate())
+		board.set_contents_at_position_to(position, normal_white_pawn.duplicate())
 	
 	# all the other pieces
 	# black rooks
-	_board.set_contents_at_position_to(Vector2i(0,0), Piece.new(Globals.TYPE.ROOK, false, [MoveSet.new(Globals.TYPE.ROOK, self, false)]))
-	_board.set_contents_at_position_to(Vector2i(7,0), Piece.new(Globals.TYPE.ROOK, false, [MoveSet.new(Globals.TYPE.ROOK, self, false)]))
+	board.set_contents_at_position_to(Vector2i(0,0), Piece.new(Globals.TYPE.ROOK, false, [MoveSet.new(Globals.TYPE.ROOK, self, false)]))
+	board.set_contents_at_position_to(Vector2i(7,0), Piece.new(Globals.TYPE.ROOK, false, [MoveSet.new(Globals.TYPE.ROOK, self, false)]))
 	# white rooks
-	_board.set_contents_at_position_to(Vector2i(0,7), Piece.new(Globals.TYPE.ROOK, true, [MoveSet.new(Globals.TYPE.ROOK, self, true)]))
-	_board.set_contents_at_position_to(Vector2i(7,7), Piece.new(Globals.TYPE.ROOK, true, [MoveSet.new(Globals.TYPE.ROOK, self, true)]))
+	board.set_contents_at_position_to(Vector2i(0,7), Piece.new(Globals.TYPE.ROOK, true, [MoveSet.new(Globals.TYPE.ROOK, self, true)]))
+	board.set_contents_at_position_to(Vector2i(7,7), Piece.new(Globals.TYPE.ROOK, true, [MoveSet.new(Globals.TYPE.ROOK, self, true)]))
 	# black knights
-	_board.set_contents_at_position_to(Vector2i(1,0), Piece.new(Globals.TYPE.KNIGHT, false, [MoveSet.new(Globals.TYPE.KNIGHT, self, false)]))
-	_board.set_contents_at_position_to(Vector2i(6,0), Piece.new(Globals.TYPE.KNIGHT, false, [MoveSet.new(Globals.TYPE.KNIGHT, self, false)]))
+	board.set_contents_at_position_to(Vector2i(1,0), Piece.new(Globals.TYPE.KNIGHT, false, [MoveSet.new(Globals.TYPE.KNIGHT, self, false)]))
+	board.set_contents_at_position_to(Vector2i(6,0), Piece.new(Globals.TYPE.KNIGHT, false, [MoveSet.new(Globals.TYPE.KNIGHT, self, false)]))
 	# white knights
-	_board.set_contents_at_position_to(Vector2i(1,7), Piece.new(Globals.TYPE.KNIGHT, true, [MoveSet.new(Globals.TYPE.KNIGHT, self, true)]))
-	_board.set_contents_at_position_to(Vector2i(6,7), Piece.new(Globals.TYPE.KNIGHT, true, [MoveSet.new(Globals.TYPE.KNIGHT, self, true)]))
+	board.set_contents_at_position_to(Vector2i(1,7), Piece.new(Globals.TYPE.KNIGHT, true, [MoveSet.new(Globals.TYPE.KNIGHT, self, true)]))
+	board.set_contents_at_position_to(Vector2i(6,7), Piece.new(Globals.TYPE.KNIGHT, true, [MoveSet.new(Globals.TYPE.KNIGHT, self, true)]))
 	# black bishops
-	_board.set_contents_at_position_to(Vector2i(2,0), Piece.new(Globals.TYPE.BISHOP, false, [MoveSet.new(Globals.TYPE.BISHOP, self, false)]))
-	_board.set_contents_at_position_to(Vector2i(5,0), Piece.new(Globals.TYPE.BISHOP, false, [MoveSet.new(Globals.TYPE.BISHOP, self, false)]))
+	board.set_contents_at_position_to(Vector2i(2,0), Piece.new(Globals.TYPE.BISHOP, false, [MoveSet.new(Globals.TYPE.BISHOP, self, false)]))
+	board.set_contents_at_position_to(Vector2i(5,0), Piece.new(Globals.TYPE.BISHOP, false, [MoveSet.new(Globals.TYPE.BISHOP, self, false)]))
 	# white bishops
-	_board.set_contents_at_position_to(Vector2i(2,7), Piece.new(Globals.TYPE.BISHOP, true, [MoveSet.new(Globals.TYPE.BISHOP, self, true)]))
-	_board.set_contents_at_position_to(Vector2i(5,7), Piece.new(Globals.TYPE.BISHOP, true, [MoveSet.new(Globals.TYPE.BISHOP, self, true)]))
+	board.set_contents_at_position_to(Vector2i(2,7), Piece.new(Globals.TYPE.BISHOP, true, [MoveSet.new(Globals.TYPE.BISHOP, self, true)]))
+	board.set_contents_at_position_to(Vector2i(5,7), Piece.new(Globals.TYPE.BISHOP, true, [MoveSet.new(Globals.TYPE.BISHOP, self, true)]))
 	# black royalty
-	_board.set_contents_at_position_to(Vector2i(3,0), Piece.new(Globals.TYPE.QUEEN, false, [MoveSet.new(Globals.TYPE.QUEEN, self, false)]))
-	_board.set_contents_at_position_to(Vector2i(4,0), Piece.new(Globals.TYPE.KING, false, [MoveSet.new(Globals.TYPE.KING, self, false)]))
+	board.set_contents_at_position_to(Vector2i(3,0), Piece.new(Globals.TYPE.QUEEN, false, [MoveSet.new(Globals.TYPE.QUEEN, self, false)]))
+	board.set_contents_at_position_to(Vector2i(4,0), Piece.new(Globals.TYPE.KING, false, [MoveSet.new(Globals.TYPE.KING, self, false)]))
 	# white royalty
-	_board.set_contents_at_position_to(Vector2i(3,7), Piece.new(Globals.TYPE.QUEEN, true, [MoveSet.new(Globals.TYPE.QUEEN, self, true)]))
-	_board.set_contents_at_position_to(Vector2i(4,7), Piece.new(Globals.TYPE.KING, true, [MoveSet.new(Globals.TYPE.KING, self, true)]))
+	board.set_contents_at_position_to(Vector2i(3,7), Piece.new(Globals.TYPE.QUEEN, true, [MoveSet.new(Globals.TYPE.QUEEN, self, true)]))
+	board.set_contents_at_position_to(Vector2i(4,7), Piece.new(Globals.TYPE.KING, true, [MoveSet.new(Globals.TYPE.KING, self, true)]))

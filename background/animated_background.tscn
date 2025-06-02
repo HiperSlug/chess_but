@@ -1,0 +1,33 @@
+[gd_scene load_steps=3 format=3 uid="uid://dbbkbp7n0w66d"]
+
+[ext_resource type="Shader" uid="uid://d347mhhlijrcl" path="res://background/animated_background.gdshader" id="1_a688l"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_8t0e6"]
+shader = ExtResource("1_a688l")
+shader_parameter/stretch = 0.2
+shader_parameter/thing1 = 1.0
+shader_parameter/thing2 = 1.0
+shader_parameter/thing3 = 1.0
+shader_parameter/scale = 1.0
+
+[node name="AnimatedBackground" type="CanvasLayer"]
+
+[node name="ColorRect2" type="ColorRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.0941176, 0.392157, 0.517647, 1)
+metadata/_edit_use_anchors_ = true
+
+[node name="ColorRect" type="ColorRect" parent="."]
+material = SubResource("ShaderMaterial_8t0e6")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+metadata/_edit_use_anchors_ = true

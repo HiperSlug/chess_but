@@ -1,6 +1,9 @@
-[gd_scene load_steps=2 format=3 uid="uid://bt1a2oqcf8btm"]
+[gd_scene load_steps=5 format=3 uid="uid://bt1a2oqcf8btm"]
 
+[ext_resource type="Theme" uid="uid://bxjk67b244r41" path="res://theme/default_theme.tres" id="1_3shxk"]
 [ext_resource type="Script" uid="uid://dqhuh10nywd5x" path="res://main_menu/main_menu.gd" id="1_oa53l"]
+[ext_resource type="Texture2D" uid="uid://qb48ldl8rxcp" path="res://main_menu/icon_checkmark.png" id="2_d3a7t"]
+[ext_resource type="PackedScene" uid="uid://dbbkbp7n0w66d" path="res://background/animated_background.tscn" id="3_bws42"]
 
 [node name="MainMenu" type="Control"]
 layout_mode = 3
@@ -9,60 +12,157 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+theme = ExtResource("1_3shxk")
 script = ExtResource("1_oa53l")
 
-[node name="BeServer" type="Button" parent="."]
-layout_mode = 0
-offset_right = 8.0
-offset_bottom = 8.0
-text = "BE SERVER"
+[node name="AnimatedBackground" parent="." instance=ExtResource("3_bws42")]
 
-[node name="ConnectToServer" type="Button" parent="."]
-layout_mode = 0
-offset_top = 31.0
-offset_right = 171.0
-offset_bottom = 62.0
-text = "CONNECT TO SERVER"
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
 
-[node name="VBoxContainer" type="VBoxContainer" parent="."]
+[node name="Panel2" type="Panel" parent="CanvasLayer"]
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 23.0
+offset_top = -183.0
+offset_right = 407.0
+offset_bottom = -25.0
+grow_vertical = 0
+theme_type_variation = &"PanelBox"
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/Panel2"]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -20.0
-offset_top = -20.0
-offset_right = 20.0
-offset_bottom = 20.0
+offset_left = -147.5
+offset_top = -58.5
+offset_right = 147.5
+offset_bottom = 58.5
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="SinglePlayer" type="Button" parent="VBoxContainer"]
+[node name="Label" type="Label" parent="CanvasLayer/Panel2/VBoxContainer"]
 layout_mode = 2
-text = "SINGLE PLAYER"
-
-[node name="Online" type="Button" parent="VBoxContainer"]
-layout_mode = 2
-text = "ONLINE"
-
-[node name="VBoxContainer2" type="VBoxContainer" parent="."]
-layout_mode = 0
-offset_left = -2.0
-offset_top = 116.0
-offset_right = 151.0
-offset_bottom = 174.0
-
-[node name="Label" type="Label" parent="VBoxContainer2"]
-layout_mode = 2
+theme_type_variation = &"LabelOnPanel"
 text = "Display Name"
+horizontal_alignment = 1
 
-[node name="LineEdit" type="LineEdit" parent="VBoxContainer2"]
+[node name="LineEdit" type="LineEdit" parent="CanvasLayer/Panel2/VBoxContainer"]
 layout_mode = 2
+focus_mode = 1
 placeholder_text = "Anonymous"
+alignment = 1
+keep_editing_on_text_submit = true
+caret_blink = true
 
-[connection signal="pressed" from="BeServer" to="." method="_on_be_server_pressed"]
-[connection signal="pressed" from="ConnectToServer" to="." method="_on_connect_to_server_pressed"]
-[connection signal="pressed" from="VBoxContainer/SinglePlayer" to="." method="_on_single_player_pressed"]
-[connection signal="pressed" from="VBoxContainer/Online" to="." method="_on_online_pressed"]
-[connection signal="text_changed" from="VBoxContainer2/LineEdit" to="." method="_on_line_edit_text_changed"]
+[node name="Play" type="Panel" parent="CanvasLayer"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -239.0
+offset_top = -102.0
+offset_right = 239.0
+offset_bottom = 102.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_type_variation = &"PanelBox"
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/Play"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -200.0
+offset_top = -63.0
+offset_right = 200.0
+offset_bottom = 63.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="SinglePlayer" type="Button" parent="CanvasLayer/Play/VBoxContainer"]
+layout_mode = 2
+theme_type_variation = &"SquareButton"
+text = "Local"
+
+[node name="QueueOnline" type="Button" parent="CanvasLayer/Play/VBoxContainer"]
+custom_minimum_size = Vector2(400, 0)
+layout_mode = 2
+theme_type_variation = &"SquareButton"
+toggle_mode = true
+text = "Queue Online"
+
+[node name="Title" type="RichTextLabel" parent="CanvasLayer"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -430.0
+offset_top = -257.0
+offset_right = 430.0
+offset_bottom = -156.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/bold_font_size = 64
+bbcode_enabled = true
+text = "[b]CHESS"
+fit_content = true
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Panel" type="Panel" parent="CanvasLayer"]
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -184.0
+offset_top = -178.0
+offset_right = -21.0
+offset_bottom = -22.0
+grow_horizontal = 0
+grow_vertical = 0
+theme_type_variation = &"PanelBox"
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/Panel"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -63.0
+offset_top = -55.5
+offset_right = 63.0
+offset_bottom = 55.5
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Label" type="Label" parent="CanvasLayer/Panel/VBoxContainer"]
+layout_mode = 2
+theme_type_variation = &"LabelOnPanel"
+theme_override_font_sizes/font_size = 16
+text = "CONNECTION
+STATUS"
+horizontal_alignment = 1
+
+[node name="ConnectionStatus" type="PanelContainer" parent="CanvasLayer/Panel/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+
+[node name="TextureRect" type="TextureRect" parent="CanvasLayer/Panel/VBoxContainer/ConnectionStatus"]
+layout_mode = 2
+texture = ExtResource("2_d3a7t")
+stretch_mode = 2
+
+[connection signal="text_submitted" from="CanvasLayer/Panel2/VBoxContainer/LineEdit" to="." method="_on_line_edit_text_submitted"]
+[connection signal="pressed" from="CanvasLayer/Play/VBoxContainer/SinglePlayer" to="." method="_on_single_player_pressed"]
+[connection signal="pressed" from="CanvasLayer/Play/VBoxContainer/QueueOnline" to="." method="_on_online_pressed"]

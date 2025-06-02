@@ -24,6 +24,11 @@ NetworkHandler="*res://globals/network_handler.gd"
 
 enabled=PackedStringArray()
 
+[gui]
+
+timers/tooltip_delay_sec=0.0
+theme/custom="uid://bxjk67b244r41"
+
 [input]
 
 select={

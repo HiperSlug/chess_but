@@ -1,0 +1,42 @@
+[gd_scene load_steps=3 format=3 uid="uid://bre3tnlljso6g"]
+
+[ext_resource type="Texture2D" uid="uid://bskivcrymf8ld" path="res://piece_assets/bB.svg" id="1_pnqq3"]
+[ext_resource type="Script" uid="uid://bmuoopxilj20m" path="res://moves/move_set_icon.gd" id="2_86sng"]
+
+[node name="MoveSetIcon" type="Panel"]
+custom_minimum_size = Vector2(40, 40)
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 2
+theme_type_variation = &"PanelBox"
+script = ExtResource("2_86sng")
+
+[node name="Panel" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -17.0
+offset_top = -17.0
+offset_right = 17.0
+offset_bottom = 17.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_type_variation = &"PanelBox"
+texture = ExtResource("1_pnqq3")
+expand_mode = 1
+stretch_mode = 4

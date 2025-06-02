@@ -1,0 +1,8 @@
+[gd_resource type="FontVariation" load_steps=2 format=3 uid="uid://8o6lm61huehh"]
+
+[ext_resource type="FontFile" uid="uid://bxo1eomfbp4x7" path="res://theme/font/Kenney Future.ttf" id="1_805nt"]
+
+[resource]
+base_font = ExtResource("1_805nt")
+variation_embolden = 1.0
+variation_transform = Transform2D(1, 0.5, 0, 1, 0, 0)

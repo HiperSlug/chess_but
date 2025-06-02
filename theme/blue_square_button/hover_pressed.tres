@@ -1,0 +1,16 @@
+[gd_resource type="StyleBoxTexture" load_steps=2 format=3 uid="uid://d4b52tyfmc00l"]
+
+[ext_resource type="Texture2D" uid="uid://3undoe52s4y0" path="res://theme/blue_square_button/pressed_style_box_texture.tres" id="1_cox41"]
+
+[resource]
+content_margin_left = 16.0
+content_margin_top = 24.0
+content_margin_right = 16.0
+content_margin_bottom = 16.0
+texture = ExtResource("1_cox41")
+texture_margin_left = 16.0
+texture_margin_top = 24.0
+texture_margin_right = 16.0
+texture_margin_bottom = 16.0
+region_rect = Rect2(0, 0, 128, 136)
+modulate_color = Color(0.93408, 0.93408, 0.93408, 1)

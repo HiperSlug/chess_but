@@ -1,0 +1,43 @@
+[gd_scene load_steps=4 format=3 uid="uid://m4slulllk25j"]
+
+[ext_resource type="Script" uid="uid://bfwqkqeh60653" path="res://display_piece/piece_2d/piece_2d.gd" id="1_6h8qb"]
+[ext_resource type="Texture2D" uid="uid://bskivcrymf8ld" path="res://piece_assets/bB.svg" id="2_wg5o0"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_wg5o0"]
+size = Vector2(64, 64)
+
+[node name="Piece2D" type="Node2D"]
+script = ExtResource("1_6h8qb")
+
+[node name="Area2D" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+shape = SubResource("RectangleShape2D_wg5o0")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+scale = Vector2(0.64, 0.64)
+texture = ExtResource("2_wg5o0")
+
+[node name="Control" type="Control" parent="Sprite2D"]
+clip_contents = true
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -50.0
+offset_top = -50.0
+offset_right = -50.0
+offset_bottom = -50.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Sprite2D/Control"]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+grow_vertical = 0
+mouse_filter = 2
+
+[connection signal="input_event" from="Area2D" to="." method="_on_area_2d_input_event"]

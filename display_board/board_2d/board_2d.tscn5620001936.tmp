@@ -1,0 +1,21 @@
+[gd_scene load_steps=3 format=3 uid="uid://bao4x6cxcnsv7"]
+
+[ext_resource type="Script" uid="uid://dfpivjp7h2u0s" path="res://display_board/board_2d/board_2d.gd" id="1_q7os4"]
+[ext_resource type="PackedScene" uid="uid://cnvsdf7enjfhc" path="res://display_board/gui/game_gui.tscn" id="2_pwowi"]
+
+[node name="Board2D" type="Node2D"]
+script = ExtResource("1_q7os4")
+
+[node name="Node" type="Node" parent="."]
+
+[node name="Camera2D" type="Camera2D" parent="Node"]
+position = Vector2(-234, 6)
+
+[node name="Tiles" type="Node2D" parent="."]
+
+[node name="Pieces" type="Node2D" parent="."]
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="GameGUI" parent="CanvasLayer" node_paths=PackedStringArray("board_2d") instance=ExtResource("2_pwowi")]
+board_2d = NodePath("../..")
