@@ -44,17 +44,20 @@ signal on_client_disconnected_from_server()
 var is_client_connected_to_server: bool = false
 
 var PORT: int = 80
+var bind_address: String = "0.0.0.0"
 var URL: String = "wss://chess-but.onrender.com"
 
 ## Sets the game instance as a server.
 ## Connects the server to connected and disconnected signals.
-## Port 4040.
+## Port 80.
 func create_server() -> void:
 	
 	print("hosting")
 	
 	var peer: WebSocketMultiplayerPeer = WebSocketMultiplayerPeer.new()
-	peer.create_server(PORT, "0.0.0.0")
+	peer.create_server(PORT, bind_address)
+	print(PORT)
+	print(bind_address)
 	multiplayer.multiplayer_peer = peer
 	
 	peer.peer_connected.connect(on_peer_connected)
