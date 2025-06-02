@@ -16,7 +16,7 @@ COPY server.pck /app/
 
 WORKDIR /app
 
-EXPOSE 4040
+EXPOSE 80
 
 RUN chmod +x server.x86_64
 
