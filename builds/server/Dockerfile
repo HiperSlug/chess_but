@@ -7,13 +7,9 @@ RUN apt-get update && apt-get install -y \
     libxrender1 \
     libxext6 \
     libfontconfig1 \
-    && rm -rf /var/lib/apt/lists/*
-
-
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    python3.11-slim\
+    python3\
     python3-pip \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/*
 
 
 COPY server.x86_64 /app/
@@ -21,6 +17,8 @@ COPY server.sh /app/
 COPY server.pck /app/
 
 COPY health_check_workaround.py /app/
+
+HEALTHCHECK NONE
 
 WORKDIR /app
 
