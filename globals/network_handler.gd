@@ -43,7 +43,7 @@ signal on_client_disconnected_from_server()
 ## If client is connected to the server.
 var is_client_connected_to_server: bool = false
 
-var PORT: int = 1000
+var PORT: int = 80
 var URL: String = "wss://chess-but.onrender.com"
 
 ## Sets the game instance as a server.
@@ -60,12 +60,6 @@ func create_server() -> void:
 	peer.peer_connected.connect(on_peer_connected)
 	peer.peer_disconnected.connect(on_peer_disconnected)
 	
-	create_http_server()
-
-func create_http_server() -> void:
-	var server = HTTPClient.new()
-	
-	server.connect_to_host("0.0.0.0")
 
 ## Sets the game instance as a client.
 ## Connects it to the url in the URL constant.
