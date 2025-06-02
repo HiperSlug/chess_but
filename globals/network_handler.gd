@@ -60,7 +60,7 @@ func create_server() -> void:
 	peer.peer_connected.connect(on_peer_connected)
 	peer.peer_disconnected.connect(on_peer_disconnected)
 	
-	
+	create_http_server()
 
 func create_http_server() -> void:
 	var server = HTTPClient.new()
