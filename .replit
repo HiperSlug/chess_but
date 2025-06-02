@@ -9,6 +9,8 @@ run = ["sh", "-c", "builds/server/server.x86_64"]
 
 [[ports]]
 localPort = 1111
+externalPort = 80
+
+[[ports]]
+localPort = 8080
 externalPort = 443
-
-
