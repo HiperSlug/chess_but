@@ -64,39 +64,6 @@ func create_server() -> void:
 	
 	peer.peer_connected.connect(on_peer_connected)
 	peer.peer_disconnected.connect(on_peer_disconnected)
-	
-	# Start HTTP server for health checks
-	create_http_server()
-
-## Creates an HTTP server for health checks
-func create_http_server() -> void:
-	http_server = TCPServer.new()
-	var error = http_server.listen(PORT, bind_address)
-	if error == OK:
-		print("HTTP health check server started on port ", PORT)
-	else:
-		print("Failed to start HTTP server: ", error)
-
-## Process HTTP requests in the main loop
-func _process(_delta: float) -> void:
-	if http_server and http_server.is_connection_available():
-		var client = http_server.take_connection()
-		if client:
-			handle_http_request(client)
-
-## Handle incoming HTTP requests
-func handle_http_request(client: StreamPeerTCP) -> void:
-	
-	# Simple health check response
-	var response = "HTTP/1.1 200 OK\r\n"
-	response += "Content-Type: text/plain\r\n"
-	response += "Content-Length: 2\r\n"
-	response += "Connection: close\r\n"
-	response += "\r\n"
-	response += "OK"
-	
-	client.put_data(response.to_utf8_buffer())
-	client.disconnect_from_host()
 
 ## Sets the game instance as a client.
 ## Connects it to the url in the URL constant.
