@@ -54,7 +54,7 @@ func create_server() -> void:
 	print("hosting")
 	
 	var peer: WebSocketMultiplayerPeer = WebSocketMultiplayerPeer.new()
-	peer.create_server(PORT)
+	peer.create_server(PORT, "0.0.0.0")
 	multiplayer.multiplayer_peer = peer
 	
 	peer.peer_connected.connect(on_peer_connected)
