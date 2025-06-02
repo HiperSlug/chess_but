@@ -64,6 +64,26 @@ func create_server() -> void:
 	
 	peer.peer_connected.connect(on_peer_connected)
 	peer.peer_disconnected.connect(on_peer_disconnected)
+	
+	http_server = TCPServer.new()
+	
+	http_server.listen(PORT, bind_address)
+
+func _process(delta: float) -> void:
+	if http_server and http_server.is_connection_available():
+		var client = http_server.take_connection()
+		if client:
+			handle_http_request(client)
+
+
+func handle_http_request(client: StreamPeerTCP) -> void:
+	
+	var response: String = "200"
+	
+	client.put_data(response.to_utf8_buffer())
+	client.disconnect_from_host()
+
+	
 
 ## Sets the game instance as a client.
 ## Connects it to the url in the URL constant.
