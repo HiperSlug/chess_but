@@ -43,7 +43,7 @@ signal on_client_disconnected_from_server()
 ## If client is connected to the server.
 var is_client_connected_to_server: bool = false
 
-var PORT: int = 4040
+var PORT: int = 443
 var URL: String = "ws://localhost:{0}".format([PORT]) # change this to server hosting url
 
 ## Sets the game instance as a server.
