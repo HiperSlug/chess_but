@@ -22,7 +22,7 @@ HEALTHCHECK NONE
 
 WORKDIR /app
 
-EXPOSE 80
+EXPOSE 443
 
 RUN chmod +x server.x86_64
 
