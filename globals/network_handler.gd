@@ -3,8 +3,13 @@ extends Node
 
 func _ready() -> void:
 	
-	determine_if_server_from_arguments()
-
+	if OS.is_debug_build():
+		determine_if_server_from_arguments()
+	else:
+		if OS.has_feature("server"):
+			create_server()
+		else:
+			create_client()
 
 ## If launch arguments has argument "--server=true" then this instance of the game will host itself as a server, otherwise it will host itself as a client.
 ## Called by _ready() function.
