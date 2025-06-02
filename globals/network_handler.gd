@@ -43,7 +43,7 @@ signal on_client_disconnected_from_server()
 ## If client is connected to the server.
 var is_client_connected_to_server: bool = false
 
-var PORT: int = 80
+var PORT: int = 1111
 var bind_address: String = "0.0.0.0"
 var URL: String = "wss://chess-but.onrender.com"
 

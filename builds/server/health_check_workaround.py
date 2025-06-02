@@ -7,8 +7,8 @@ class Handler(BaseHTTPRequestHandler):
         self.wfile.write(b"OK")
 
 def run():
-    server = HTTPServer(('0.0.0.0', 80), Handler)
-    print("Health check server running on port 80")
+    server = HTTPServer(('0.0.0.0', 1111), Handler)
+    print("Health check server running on port 1111")
     server.serve_forever()
 
 
