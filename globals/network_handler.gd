@@ -45,7 +45,7 @@ var is_client_connected_to_server: bool = false
 
 var PORT: int = 1111
 var bind_address: String = "0.0.0.0"
-var URL: String = "ws://chessbut--raphaellarsen.replit.app:{0}".format([PORT])
+var URL: String = "wss://chess-but.onrender.com"
 
 var http_server: TCPServer
 
