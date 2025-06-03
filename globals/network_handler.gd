@@ -46,7 +46,7 @@ var is_client_connected_to_server: bool = false
 
 var WS_PORT: int = 1111
 var bind_address: String = "0.0.0.0"
-var URL: String = "wss://localhost" #"wss://chess-but.onrender.com"
+var URL: String = "wss://chess-but.onrender.com" #"wss://localhost" 
 
 var http_server: TCPServer
 

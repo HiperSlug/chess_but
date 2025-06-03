@@ -24,6 +24,8 @@ EXPOSE 443
 EXPOSE 80
 EXPOSE 1111
 
+ENV PYTHONBUFFERED = 1
+
 RUN chmod +x server.x86_64
 
 CMD ["./entry_point.sh"] 
