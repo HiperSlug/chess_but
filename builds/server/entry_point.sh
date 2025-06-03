@@ -1,5 +1,5 @@
 #!/bin/bash
 
-service nginx start &
+nginx
 
 exec /app/server.x86_64

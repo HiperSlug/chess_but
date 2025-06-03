@@ -14,7 +14,7 @@ RUN apt-get update && apt-get install -y \
 COPY server.x86_64 /app/
 COPY server.sh /app/
 COPY server.pck /app/
-COPY reverse_proxy_for_health_check.conf /etc/nginx/conf.d/reverse_proxy_for_health_check.conf
+COPY reverse_proxy_for_health_check.conf /etc/nginx/nginx.conf
 COPY entry_point.sh /app/
 
 WORKDIR /app
