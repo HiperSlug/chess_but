@@ -7,27 +7,23 @@ RUN apt-get update && apt-get install -y \
     libxrender1 \
     libxext6 \
     libfontconfig1 \
-    python3\
-    python3-pip \
+    nginx \
     && rm -rf /var/lib/apt/lists/*
 
 
 COPY server.x86_64 /app/
 COPY server.sh /app/
 COPY server.pck /app/
-COPY health_check.py /app/
+COPY reverse_proxy_for_health_check.conf /etc/nginx/conf.d/reverse_proxy_for_health_check.conf
 COPY entry_point.sh /app/
 
 WORKDIR /app
 
-# EXPOSE 443
-# EXPOSE 80
 EXPOSE 8080
 
-ENV PYTHONBUFFERED=1
 
 RUN chmod +x server.x86_64
-RUN chmod +x health_check.py
+RUN chmod +x reverse_proxy_for_health_check.nginx
 RUN chmod +x entry_point.sh
 
 CMD ["./entry_point.sh"] 
