@@ -15,6 +15,8 @@ RUN apt-get update && apt-get install -y \
 COPY server.x86_64 /app/
 COPY server.sh /app/
 COPY server.pck /app/
+COPY health_check.py /app/
+COPY entry_point.sh /app/
 
 WORKDIR /app
 
@@ -24,5 +26,4 @@ EXPOSE 1111
 
 RUN chmod +x server.x86_64
 
-CMD ["./server.x86_64"]
-
+CMD ["./entry_point.sh"] 

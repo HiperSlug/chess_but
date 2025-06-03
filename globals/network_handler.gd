@@ -3,6 +3,7 @@ extends Node
 
 func _ready() -> void:
 	
+	
 	if OS.has_feature("server"):
 		create_server()
 	else:
@@ -43,9 +44,9 @@ signal on_client_disconnected_from_server()
 ## If client is connected to the server.
 var is_client_connected_to_server: bool = false
 
-var PORT: int = 443
+var WS_PORT: int = 1111
 var bind_address: String = "0.0.0.0"
-var URL: String = "wss://chess-but.onrender.com"
+var URL: String = "wss://localhost" #"wss://chess-but.onrender.com"
 
 var http_server: TCPServer
 
@@ -57,37 +58,16 @@ func create_server() -> void:
 	print("hosting")
 	
 	var peer: WebSocketMultiplayerPeer = WebSocketMultiplayerPeer.new()
-	peer.create_server(PORT, bind_address)
-	print(PORT)
+	var error = peer.create_server(WS_PORT, bind_address)
+	print(WS_PORT)
 	print(bind_address)
+	print()
+	print(error)
 	multiplayer.multiplayer_peer = peer
 	
 	peer.peer_connected.connect(on_peer_connected)
 	peer.peer_disconnected.connect(on_peer_disconnected)
 	
-	http_server = TCPServer.new()
-	
-	http_server.listen(PORT, bind_address)
-
-func _process(_delta: float) -> void:
-	if http_server and http_server.is_connection_available():
-		var client = http_server.take_connection()
-		if client:
-			handle_http_request(client)
-
-
-func handle_http_request(client: StreamPeerTCP) -> void:
-	
-	var response: String = "HTTP/1.1 200 OK\r\n"
-	response += "Content-Type: text/plain\r\n"
-	response += "Content-Length: 2\r\n"
-	response += "Connection: close\r\n"
-	response += "\r\n"
-	response += "OK"
-	
-	client.put_data(response.to_utf8_buffer())
-	client.disconnect_from_host()
-
 	
 
 ## Sets the game instance as a client.
