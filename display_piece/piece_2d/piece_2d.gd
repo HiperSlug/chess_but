@@ -100,6 +100,7 @@ func on_board_piece_removed(removed_piece: Piece) -> void:
 func _on_area_2d_input_event(_viewport: Node, event: InputEvent, _shape_idx: int) -> void:
 	if event.is_action_pressed("select"):
 		following_mouse = true
+		z_index += 1
 		relative_position = global_position - get_global_mouse_position()
 	
 	if event.is_action("scroll_up"):
@@ -112,6 +113,7 @@ func _on_area_2d_input_event(_viewport: Node, event: InputEvent, _shape_idx: int
 func _input(event: InputEvent) -> void:
 	if event.is_action_released("select") and following_mouse:
 		following_mouse = false
+		z_index -= 1
 		$Sprite2D.position = Vector2.ZERO
 
 ## Moves the move set container right and left based on the input parameter

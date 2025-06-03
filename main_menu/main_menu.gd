@@ -22,6 +22,9 @@ func _ready() -> void:
 	$CanvasLayer/Play/VBoxContainer/QueueOnline.disabled = true
 	$CanvasLayer/Play/VBoxContainer/QueueOnline.text = "Queue Online"
 	
+	if NetworkHandler.is_client_connected_to_server:
+		$CanvasLayer/Play/VBoxContainer/QueueOnline.disabled = false
+	
 	set_default_display_name()
 	set_connection_status(NetworkHandler.is_client_connected_to_server)
 	NetworkHandler.on_client_connected_to_server.connect(on_client_connected_to_server)
@@ -37,6 +40,8 @@ func on_client_connected_to_server(id: int) -> void:
 func on_client_disconnected_from_server() -> void:
 	$CanvasLayer/Play/VBoxContainer/QueueOnline.disabled = true
 	$CanvasLayer/Play/VBoxContainer/QueueOnline.text = "Queue Online"
+	
+	NetworkHandler.create_client()
 	set_connection_status(false)
 
 #region DISPLAY NAME
