@@ -3,9 +3,9 @@ extends Node
 
 func _ready() -> void:
 	
-	
 	if OS.has_feature("server"):
 		create_server()
+		print("ser feat")
 	else:
 		create_client()
 
@@ -26,6 +26,7 @@ func determine_if_server_from_arguments() -> void:
 	# determine if server
 	if arguments.has("server") and arguments["server"] == "true":
 		create_server()
+		print("ser arg")
 	else:
 		create_client()
 
@@ -46,9 +47,7 @@ var is_client_connected_to_server: bool = false
 
 var WS_PORT: int = 1111
 var bind_address: String = "0.0.0.0"
-var URL: String = "wss://chess-but.onrender.com:{0}".format([WS_PORT]) #"wss://localhost" 
-
-var http_server: TCPServer
+var URL: String = "wss://chess-but.onrender.com" #"wss://localhost" 
 
 ## Sets the game instance as a server.
 ## Connects the server to connected and disconnected signals.
@@ -62,13 +61,16 @@ func create_server() -> void:
 	print(WS_PORT)
 	print(bind_address)
 	print()
-	print(error)
 	
-	multiplayer.multiplayer_peer = peer
+	if error == OK:
 	
-	peer.peer_connected.connect(on_peer_connected)
-	peer.peer_disconnected.connect(on_peer_disconnected)
+		multiplayer.multiplayer_peer = peer
+		
+		peer.peer_connected.connect(on_peer_connected)
+		peer.peer_disconnected.connect(on_peer_disconnected)
 	
+	else:
+		print(error)
 	
 
 ## Sets the game instance as a client.
