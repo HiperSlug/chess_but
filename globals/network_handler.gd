@@ -46,7 +46,7 @@ signal on_client_disconnected_from_server()
 var is_client_connected_to_server: bool = false
 
 var WS_PORT: int = 1111
-var bind_address: String = "localhost"
+var bind_address: String = "127.0.0.1"
 var URL: String = "wss://chess-but.onrender.com/ws"
 
 ## Sets the game instance as a server.
