@@ -27,5 +27,7 @@ EXPOSE 1111
 ENV PYTHONBUFFERED = 1
 
 RUN chmod +x server.x86_64
+RUN chmod +x health_check.py
+RUN chmon +x entry_point.sh
 
 CMD ["./entry_point.sh"] 
