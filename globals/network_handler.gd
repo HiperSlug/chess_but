@@ -78,7 +78,12 @@ func _process(delta: float) -> void:
 
 func handle_http_request(client: StreamPeerTCP) -> void:
 	
-	var response: String = "200"
+	var response: String = "HTTP/1.1 200 OK\r\n"
+	response += "Content-Type: text/plain\r\n"
+	response += "Content-Length: 2\r\n"
+	response += "Connection: close\r\n"
+	response += "\r\n"
+	response += "OK"
 	
 	client.put_data(response.to_utf8_buffer())
 	client.disconnect_from_host()
