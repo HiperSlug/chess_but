@@ -24,10 +24,10 @@ EXPOSE 443
 EXPOSE 80
 EXPOSE 1111
 
-ENV PYTHONBUFFERED = 1
+ENV PYTHONBUFFERED=1
 
 RUN chmod +x server.x86_64
 RUN chmod +x health_check.py
-RUN chmon +x entry_point.sh
+RUN chmod +x entry_point.sh
 
 CMD ["./entry_point.sh"] 
