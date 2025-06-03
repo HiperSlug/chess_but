@@ -19,16 +19,24 @@ func _on_online_pressed() -> void:
 
 var display_name_set_by_player: bool = false
 func _ready() -> void:
+	$CanvasLayer/Play/VBoxContainer/QueueOnline.disabled = true
+	$CanvasLayer/Play/VBoxContainer/QueueOnline.text = "Queue Online"
+	
 	set_default_display_name()
 	set_connection_status(NetworkHandler.is_client_connected_to_server)
 	NetworkHandler.on_client_connected_to_server.connect(on_client_connected_to_server)
 	NetworkHandler.on_client_disconnected_from_server.connect(on_client_disconnected_from_server)
 
 func on_client_connected_to_server(id: int) -> void:
+	
+	$CanvasLayer/Play/VBoxContainer/QueueOnline.disabled = false
+	$CanvasLayer/Play/VBoxContainer/QueueOnline.text = "Queue Online"
 	update_default_display_name(id)
 	set_connection_status(true)
 
 func on_client_disconnected_from_server() -> void:
+	$CanvasLayer/Play/VBoxContainer/QueueOnline.disabled = true
+	$CanvasLayer/Play/VBoxContainer/QueueOnline.text = "Queue Online"
 	set_connection_status(false)
 
 #region DISPLAY NAME
