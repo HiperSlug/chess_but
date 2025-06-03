@@ -23,7 +23,6 @@ EXPOSE 8080
 
 
 RUN chmod +x server.x86_64
-RUN chmod +x reverse_proxy_for_health_check.nginx
 RUN chmod +x entry_point.sh
 
 CMD ["./entry_point.sh"] 
