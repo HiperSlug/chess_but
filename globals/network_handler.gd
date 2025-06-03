@@ -46,7 +46,7 @@ var is_client_connected_to_server: bool = false
 
 var WS_PORT: int = 1111
 var bind_address: String = "0.0.0.0"
-var URL: String = "wss://chess-but.onrender.com" #"wss://localhost" 
+var URL: String = "wss://chess-but.onrender.com:{0}".format([WS_PORT]) #"wss://localhost" 
 
 var http_server: TCPServer
 
@@ -63,6 +63,7 @@ func create_server() -> void:
 	print(bind_address)
 	print()
 	print(error)
+	
 	multiplayer.multiplayer_peer = peer
 	
 	peer.peer_connected.connect(on_peer_connected)
@@ -76,6 +77,7 @@ func create_client() -> void:
 	
 	var peer: WebSocketMultiplayerPeer = WebSocketMultiplayerPeer.new()
 	peer.create_client(URL)
+	print(URL)
 	multiplayer.multiplayer_peer = peer
 	
 	peer.peer_connected.connect(on_peer_connected)
