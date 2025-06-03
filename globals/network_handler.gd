@@ -43,7 +43,7 @@ signal on_client_disconnected_from_server()
 ## If client is connected to the server.
 var is_client_connected_to_server: bool = false
 
-var PORT: int = 1111
+var PORT: int = 443
 var bind_address: String = "0.0.0.0"
 var URL: String = "wss://chess-but.onrender.com"
 
@@ -69,7 +69,7 @@ func create_server() -> void:
 	
 	http_server.listen(PORT, bind_address)
 
-func _process(delta: float) -> void:
+func _process(_delta: float) -> void:
 	if http_server and http_server.is_connection_available():
 		var client = http_server.take_connection()
 		if client:
