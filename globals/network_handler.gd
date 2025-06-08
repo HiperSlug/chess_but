@@ -54,6 +54,8 @@ var URL: String = "wss://chess-but.onrender.com/ws"
 ## Port 80.
 func create_server() -> void:
 	
+	is_client_connected_to_server = true
+	
 	print("hosting")
 	
 	var peer: WebSocketMultiplayerPeer = WebSocketMultiplayerPeer.new()
@@ -84,6 +86,10 @@ func create_client() -> void:
 	
 	peer.peer_connected.connect(on_peer_connected)
 	peer.peer_disconnected.connect(on_peer_disconnected)
+
+func _physics_process(delta: float) -> void:
+	if not is_client_connected_to_server:
+		create_client()
 
 ## Client and server function.
 ## Client uses this to know when to give the server its display name.
