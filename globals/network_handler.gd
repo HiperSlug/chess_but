@@ -1,13 +1,20 @@
 extends Node
 
 
+var wait_time: float =  5.0
+func try_to_join_as_client() -> void:
+	while not is_client_connected_to_server:
+		
+		create_client()
+		await get_tree().create_timer(wait_time).timeout
+
+
 func _ready() -> void:
 	
 	if OS.has_feature("server"):
 		create_server()
-		print("ser feat")
 	else:
-		create_client()
+		try_to_join_as_client()
 
 ## If launch arguments has argument "--server=true" then this instance of the game will host itself as a server, otherwise it will host itself as a client.
 ## Called by _ready() function.
@@ -87,9 +94,6 @@ func create_client() -> void:
 	peer.peer_connected.connect(on_peer_connected)
 	peer.peer_disconnected.connect(on_peer_disconnected)
 
-func _physics_process(delta: float) -> void:
-	if not is_client_connected_to_server:
-		create_client()
 
 ## Client and server function.
 ## Client uses this to know when to give the server its display name.
@@ -118,6 +122,8 @@ func on_peer_disconnected(id: int) -> void:
 		is_client_connected_to_server = false
 		
 		on_client_disconnected_from_server.emit()
+		
+		try_to_join_as_client()
 	
 	else:
 	
@@ -130,7 +136,11 @@ func on_peer_disconnected(id: int) -> void:
 			
 			var match_info_array: Array = matches[match_id]
 			
-			if match_info_array[0] == id or match_info_array[1] == id:
+			if match_info_array[0] == id:
+				end_match(match_id, Globals.RESULT.BLACK_WIN)
+				remove_player_from_match(match_id, id)
+			elif match_info_array[1] == id:
+				end_match(match_id, Globals.RESULT.WHITE_WIN)
 				remove_player_from_match(match_id, id)
 
 
